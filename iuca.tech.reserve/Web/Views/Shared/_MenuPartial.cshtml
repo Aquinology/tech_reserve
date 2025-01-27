@@ -1,0 +1,20 @@
+﻿@using Domain.Constants;
+@using Microsoft.AspNetCore.Identity;
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        if (User.IsInRole(Roles.Administrator))
+        {
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">Settings</a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" asp-controller="User" asp-action="Index">Users</a></li>
+                </ul>
+            </li>
+        }
+    }
+</ul>

@@ -1,0 +1,29 @@
+﻿@using Microsoft.AspNetCore.Identity;
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    string? returnUrl = null;
+    var query = ViewContext.HttpContext.Request.Query;
+    if (query.ContainsKey("returnUrl"))
+    {
+        returnUrl = query["returnUrl"];
+    }
+}
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-white mr-2">@User.Identity!.Name</a>
+        </li>
+        <li class="nav-item">
+            <form asp-controller="Account" asp-action="Logout">
+                <button type="submit" class="nav-link btn btn-link shadow-none">
+                    Logout
+                </button>
+            </form>
+        </li>
+    }
+</ul>

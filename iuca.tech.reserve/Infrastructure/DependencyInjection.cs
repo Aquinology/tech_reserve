@@ -16,6 +16,10 @@ public static class DependencyInjection
 
         Guard.Against.Null(connectionString, message: "Connection string 'DefaultConnection' not found.");
 
+        var googleConfiguration = configuration.GetSection("Authentication:Google");
+
+        Guard.Against.Null(googleConfiguration, message: "Configuration 'Authentication:Google' not found.");
+
         // Database
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
@@ -24,10 +28,23 @@ public static class DependencyInjection
 
         services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 
+        // Seeds
+        services.AddScoped<ApplicationDbContextInitialiser>();
+
         // Identity
         services.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
+
+        // Google authentication
+        services
+            .AddAuthentication()
+            .AddGoogle(options =>
+            {
+                options.ClientId = googleConfiguration["ClientId"]!;
+                options.ClientSecret = googleConfiguration["ClientSecret"]!;
+                options.CallbackPath = "/signin-google";
+            });
 
         return services;
     }
