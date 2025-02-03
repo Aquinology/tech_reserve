@@ -1,9 +1,10 @@
 using Application;
 using Infrastructure.Data;
+using NLog;
+using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 // Add services for database operations and authentication
@@ -12,15 +13,19 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 // Add custom application interfaces and services
 builder.Services.AddApplicationServices();
 
+// Configure NLog for logging
+LogManager.LoadConfiguration("nlog.config"); // Load log configuration from the nlog.config file
+builder.Logging.ClearProviders(); // Clear built-in log providers
+builder.Logging.AddNLogWeb(); // Add NLog as a logging provider
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
-}else
+}
+else
 {
     // Populate the database with initial data
     await app.InitialiseDatabaseAsync();

@@ -51,9 +51,9 @@ public class UserController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> SyncClientsWithIdentity()
+    public async Task<IActionResult> GenerateClientAccounts()
     {
-        var result = await _userService.SyncClientsWithIdentity();
+        var result = await _userService.GenerateClientAccounts();
         return Json(new { isSuccess = result.IsSuccess, message = result.Message });
     }
 }

@@ -1,7 +1,7 @@
-﻿using Application.DTOs.Common;
-using Application.DTOs;
-using Application.Interfaces.Common;
+﻿using Application.DTOs;
+using Application.DTOs.Common;
 using Application.Interfaces;
+using Application.Interfaces.Common;
 using AutoMapper;
 using Domain.Constants;
 using Microsoft.AspNetCore.Identity;
@@ -138,7 +138,7 @@ namespace Application.Services
             }
         }
 
-        public async Task<Result> SyncClientsWithIdentity()
+        public async Task<Result> GenerateClientAccounts()
         {
             var clients = await _db.Clients
                 .Where(s => !string.IsNullOrEmpty(s.ApplicationUserId))

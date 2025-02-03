@@ -9,6 +9,22 @@
             <h2>Users</h2>
         </div>
         <div class="col-lg-6 col-12 text-lg-end">
+            <button class="btn btn-secondary shadow-none" onclick="importClients(this)">
+                <span class="button-content-default">
+                    <i class="fa fa-download" aria-hidden="true"></i>&nbsp; Import clients
+                </span>
+                <span class="button-content-loading d-none">
+                    <i class="fa fa-circle-o-notch fa-spin"></i>&nbsp; Importing...
+                </span>
+            </button>
+            <button class="btn btn-secondary shadow-none" onclick="generateClientAccounts(this)">
+                <span class="button-content-default">
+                    <i class="fa fa-refresh" aria-hidden="true"></i>&nbsp; Generate accounts
+                </span>
+                <span class="button-content-loading d-none">
+                    <i class="fa fa-circle-o-notch fa-spin"></i>&nbsp; Generating...
+                </span>
+            </button>
             <button class="btn btn-primary shadow-none" onclick="openModal()">
                 <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Create user
             </button>
@@ -89,6 +105,8 @@
 @section Scripts {
     <script src="~/js/settings/create-user.js" asp-append-version="true"></script>
     <script src="~/js/settings/delete-user.js" asp-append-version="true"></script>
+    <script src="~/js/settings/import-clients.js" asp-append-version="true"></script>
+    <script src="~/js/settings/generate-client-accounts.js" asp-append-version="true"></script>
 
     <script>
 

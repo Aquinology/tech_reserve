@@ -11,5 +11,5 @@ public interface IUserService
     Task<Result<IList<IdentityRole>>> GetAllRoles();
     Task<Result> CreateUser(string email, string role);
     Task<Result> DeleteUser(string userId);
-    Task<Result> SyncClientsWithIdentity();
+    Task<Result> GenerateClientAccounts();
 }
