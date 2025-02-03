@@ -11,6 +11,9 @@ public static class DependencyInjection
         services.AddAutoMapper(typeof(AppMappingProfile));
 
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IImportDataService, ImportDataService>();
+        services.AddScoped<IEquipmentService, EquipmentService>();
+        services.AddScoped<IRequestService, RequestService>();
 
         return services;
     }

@@ -8,6 +8,9 @@ public class AppMappingProfile : Profile
 {
     public AppMappingProfile()
     {
-        CreateMap<Client, ClientDTO>();
+        CreateMap<Client, ClientDTO>().ReverseMap();
+        CreateMap<Request, RequestDTO>().ReverseMap();
+        CreateMap<Equipment, EquipmentDTO>().ReverseMap();
+        CreateMap<EquipmentRequest, EquipmentRequestDTO>().ReverseMap();
     }
 }
