@@ -82,6 +82,11 @@ namespace Application.Services
 
         public async Task<Result> CreateUser(string email, string role)
         {
+            if (string.IsNullOrEmpty(email))
+            {
+                return Result.Error("You didn't enter an email.");
+            }
+
             if (!email.EndsWith("@iuca.kg"))
             {
                 return Result.Error("Email must end with @iuca.kg.");

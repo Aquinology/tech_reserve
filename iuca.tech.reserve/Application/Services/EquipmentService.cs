@@ -14,15 +14,18 @@ public class EquipmentService : IEquipmentService
 {
     private readonly IApplicationDbContext _db;
     private readonly IMapper _mapper;
-    private readonly ILogger<UserService> _logger;
+    private readonly ILogger<EquipmentService> _logger;
+    private readonly IFileService _fileService;
 
     public EquipmentService(IApplicationDbContext db,
         IMapper mapper,
-        ILogger<UserService> logger)
+        ILogger<EquipmentService> logger,
+        IFileService fileService)
     {
         _db = db;
         _mapper = mapper;
         _logger = logger;
+        _fileService = fileService;
     }
 
     public async Task<Result<IList<EquipmentDTO>>> GetAllEquipments()
@@ -57,6 +60,11 @@ public class EquipmentService : IEquipmentService
             if (equipmentExists)
             {
                 return Result.Error($"Equipment with number {equipmentDto.EquipmentNumber} already exists.");
+            }
+
+            if (equipmentDto.ImageFile != null && equipmentDto.ImageFile.Length != 0)
+            {
+                equipmentDto.ImagePath = await _fileService.SaveFile(equipmentDto.ImageFile);
             }
 
             var equipment = _mapper.Map<Equipment>(equipmentDto);
@@ -106,7 +114,8 @@ public class EquipmentService : IEquipmentService
 
             equipment.EquipmentNumber = equipmentDto.EquipmentNumber;
             equipment.SerialNumber = equipmentDto.SerialNumber;
-            equipment.ImgLink = equipmentDto.ImgLink;
+            equipment.ImagePath = equipmentDto.ImagePath;
+            equipment.Description = equipmentDto.Description;
             equipment.Type = equipmentDto.Type;
             equipment.Status = equipmentDto.Status;
 

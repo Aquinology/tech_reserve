@@ -6,10 +6,10 @@
 
     <div class="row pt-4">
         <div class="col-lg-6 col-12">
-            <h2>Users</h2>
+            <h2 class="mb-3">Users</h2>
         </div>
         <div class="col-lg-6 col-12 text-lg-end">
-            <button class="btn btn-secondary shadow-none" onclick="importClients(this)">
+            <button class="btn btn-info shadow-none rounded-4 my-lg-0 my-1" onclick="importClients(this)">
                 <span class="button-content-default">
                     <i class="fa fa-download" aria-hidden="true"></i>&nbsp; Import clients
                 </span>
@@ -17,7 +17,7 @@
                     <i class="fa fa-circle-o-notch fa-spin"></i>&nbsp; Importing...
                 </span>
             </button>
-            <button class="btn btn-secondary shadow-none" onclick="generateClientAccounts(this)">
+            <button class="btn btn-info shadow-none rounded-4 my-lg-0 my-1" onclick="generateClientAccounts(this)">
                 <span class="button-content-default">
                     <i class="fa fa-refresh" aria-hidden="true"></i>&nbsp; Generate accounts
                 </span>
@@ -25,7 +25,7 @@
                     <i class="fa fa-circle-o-notch fa-spin"></i>&nbsp; Generating...
                 </span>
             </button>
-            <button class="btn btn-primary shadow-none" onclick="openModal()">
+            <button class="btn btn-primary shadow-none rounded-4 my-lg-0 my-1" onclick="openModal()">
                 <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Create user
             </button>
         </div>
@@ -44,19 +44,18 @@
                             Email
                             <span class="text-danger">*</span>
                         </label>
-                        <input type="email" class="form-control shadow-none" id="email" required>
+                        <input type="email" class="form-control shadow-none rounded-4" id="email" required>
                     </div>
                     <div class="form-group my-2">
                         <label for="role">
                             Role
-                            <span class="text-danger">*</span>
                         </label>
-                        <select class="form-control shadow-none" id="role" asp-items="@ViewBag.Roles" required>
+                        <select class="form-control shadow-none rounded-4" id="role" asp-items="@ViewBag.Roles">
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary shadow-none" onclick="createUser()">Create</button>
+                    <button type="submit" class="btn btn-primary shadow-none rounded-4" onclick="createUser()">Create</button>
                 </div>
             </div>
         </div>
@@ -65,7 +64,7 @@
     <div class="row pt-4">
         <div class="col-12 table-responsive">
 
-            <table class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped bg-white">
                 <thead>
                     <tr class="text-nowrap">
                         <th scope="row">#</th>
@@ -87,7 +86,7 @@
                                     <span>@string.Join(", ", user.Roles)</span>
                                 </td>
                                 <th class="text-center">
-                                    <button class="btn btn-danger shadow-none" onclick="deleteUser('@user.User.Id')">
+                                    <button class="btn btn-danger shadow-none rounded-4" onclick="deleteUser('@user.User.Id')">
                                         <i class="fa fa-trash" aria-hidden="true"></i>
                                     </button>
                                 </th>

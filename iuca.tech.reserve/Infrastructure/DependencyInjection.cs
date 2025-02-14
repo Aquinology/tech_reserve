@@ -1,9 +1,10 @@
-﻿using Ardalis.GuardClauses;
-using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
+﻿using Application.Interfaces.Common;
+using Ardalis.GuardClauses;
 using Infrastructure.Data;
-using Application.Interfaces.Common;
+using Infrastructure.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -27,6 +28,9 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+
+        // File service
+        services.AddScoped<IFileService, FileService>();
 
         // Seeds
         services.AddScoped<ApplicationDbContextInitialiser>();

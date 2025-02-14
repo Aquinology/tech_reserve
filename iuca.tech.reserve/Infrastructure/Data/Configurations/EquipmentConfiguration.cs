@@ -12,8 +12,12 @@ public class EquipmentConfiguration : IEntityTypeConfiguration<Equipment>
             .HasMaxLength(32)
             .IsRequired(false);
 
-        builder.Property(x => x.ImgLink)
+        builder.Property(x => x.ImagePath)
             .HasMaxLength(256)
+            .IsRequired(false);
+
+        builder.Property(x => x.Description)
+            .HasMaxLength(1024)
             .IsRequired(false);
     }
 }

@@ -46,13 +46,13 @@ app.UseStatusCodePages(context =>
 {
     if (context.HttpContext.Response.StatusCode == 404)
     {
-        context.HttpContext.Response.Redirect("/Home/Index");
+        context.HttpContext.Response.Redirect("/Equipment/Index");
     }
     return Task.CompletedTask;
 });
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Equipment}/{action=Index}/{id?}");
 
 app.Run();

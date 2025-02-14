@@ -8,8 +8,9 @@ public class Equipment
 
     public int EquipmentNumber { get; set; }
     public string? SerialNumber { get; set; }
+    public string? Description { get; set; }
 
-    public string? ImgLink { get; set; }
+    public string? ImagePath { get; set; }
 
     public EquipmentType Type { get; set; }
     public EquipmentStatus Status { get; set; }

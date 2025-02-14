@@ -10,11 +10,11 @@ namespace Web.Controllers;
 [Authorize(Roles = Roles.Administrator)]
 public class UserController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    private readonly ILogger<UserController> _logger;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IUserService _userService;
 
-    public UserController(ILogger<HomeController> logger,
+    public UserController(ILogger<UserController> logger,
         UserManager<IdentityUser> userManager,
         IUserService userService)
     {

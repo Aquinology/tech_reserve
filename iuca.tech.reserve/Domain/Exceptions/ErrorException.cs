@@ -1,6 +1,6 @@
-namespace Web.Models
+namespace Domain.Exceptions
 {
-    public class ErrorViewModel
+    public class ErrorException
     {
         public string? RequestId { get; set; }
 

@@ -1,19 +1,16 @@
-﻿var createUser = async function () {
+﻿var addEquipment = async function () {
 
     event.preventDefault();
 
-    var email = $('#email').val();
-    var role = $('#role').val();
+    var formData = new FormData(document.getElementById("equipmentForm"));
 
     try {
         const response = await $.ajax({
-            url: "/User/Create",
+            url: "/Equipment/Create",
             type: "POST",
-            data: {
-                email: email,
-                role: role
-            },
-            cache: false
+            data: formData,
+            contentType: false,
+            processData: false
         });
 
         if (response.isSuccess) {
@@ -24,6 +21,6 @@
     }
     catch (error) {
         console.log(error);
-        showPopupModal(CONSTS.MODAL_FAIL, 'Error', 'An error occurred while creating.');
+        showPopupModal(CONSTS.MODAL_FAIL, 'Error', 'An error occurred while adding.');
     }
 }
