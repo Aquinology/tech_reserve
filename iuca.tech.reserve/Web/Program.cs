@@ -22,7 +22,7 @@ var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Equipment/Error");
     app.UseHsts();
 }
 else
@@ -46,7 +46,7 @@ app.UseStatusCodePages(context =>
 {
     if (context.HttpContext.Response.StatusCode == 404)
     {
-        context.HttpContext.Response.Redirect("/Equipment/Index");
+        context.HttpContext.Response.Redirect("/");
     }
     return Task.CompletedTask;
 });

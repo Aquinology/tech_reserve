@@ -3,53 +3,42 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
-<style>
-
-
-    .icon-box {
-        width: 50px;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        color: white;
-        font-size: 24px;
-    }
-
-</style>
-
 <div class="container">
     @if (SignInManager.IsSignedIn(User))
     {
-
-        <div class="row pt-4">
-            <div class="col-12 text-end">
-                <button class="btn btn-danger shadow-none my-lg-0 my-1" data-bs-toggle="modal" data-bs-target="#addEquipmentModal">
-                    <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Add equipment
-                </button>
-            </div>
-        </div>
-
-        <partial name="_AddEquipmentModal.cshtml" />
-
-        <div class="row pt-4">
-            <div class="col-6">
-                <h4>Your request</h4>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-
-                <div class="row">
-                    <div class="col-12">
-                        Approved
-                    </div>
+        if (User.IsInRole(Roles.Administrator))
+        {
+            <div class="row pt-4">
+                <div class="col-12 text-end">
+                    <button class="btn btn-danger shadow-none my-lg-0 my-1" data-bs-toggle="modal" data-bs-target="#addEquipmentModal">
+                        <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Add equipment
+                    </button>
                 </div>
-
             </div>
-        </div>
+
+            <partial name="_AddEquipmentModal.cshtml" />
+        }
+
+        if (User.IsInRole(Roles.Client))
+        {
+            <div class="row pt-4">
+                <div class="col-6">
+                    <h4>Your request</h4>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-12">
+                            Approved
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        }
 
         <div class="row pt-4">
             <div class="col-6">
@@ -65,34 +54,40 @@
                     {
                         @foreach (var equipment in Model)
                         {
-                            <div class="d-flex align-items-center mb-3">
+                            <div class="col-lg-3 col-md-4 col-6 p-2">
+                                <div class="card">
+                                    <img src="@(string.IsNullOrEmpty(equipment.ImagePath) ? "uploads\\no-photo.jpg" : equipment.ImagePath)" class="card-img-top" style="height: 160px; object-fit:cover;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@equipment.Type.ToString() @equipment.EquipmentNumber</h5>
+                                        <small class="card-subtitle mb-2 text-muted">
+                                            @if (string.IsNullOrEmpty(equipment.SerialNumber))
+                                            {
+                                                <text>No serial</text>
+                                            } else
+                                            {
+                                                <text>@equipment.SerialNumber</text>
+                                            }
+                                        </small>
+                                        <p class="card-text">
+                                            @if (string.IsNullOrEmpty(equipment.Description))
+                                            {
+                                                <text>No description</text>
+                                            }
+                                            else
+                                            {
+                                                <text>@equipment.Description</text>
+                                            }
+                                        </p>
+                                        @if (User.IsInRole(Roles.Administrator))
+                                        {
+                                            <partial name="_EditEquipmentModal.cshtml" model="@equipment" />
 
-                                @if (equipment.Type == EquipmentType.Laptop)
-                                {
-                                    <div class="icon-box bg-primary me-3">
-                                        <i class="fa fa-laptop"></i>
+                                            <a href="#" class="card-link" onclick="deleteEquipment('@equipment.Id')">Delete</a>
+                                            <a href="#" class="card-link" data-bs-toggle="modal" data-bs-target="#editEquipmentModal-@(equipment.Id)">Edit</a>
+                                        }
                                     </div>
-                                }
-                                else if (equipment.Type == EquipmentType.Mouse)
-                                {
-                                    <div class="icon-box bg-info me-3">
-                                        <i class="fa fa-mouse-pointer"></i>
-                                    </div>
-                                }
-                                else if (equipment.Type == EquipmentType.Charger)
-                                {
-                                    <div class="icon-box bg-danger me-3">
-                                        <i class="fa fa-plug"></i>
-                                    </div>
-                                }
-                                <div>
-                                    <h6 class="mb-0">@equipment.Type.ToString() @equipment.EquipmentNumber</h6>
-                                    <small class="text-muted">@equipment.SerialNumber</small>
-                                    <small class="text-muted">@equipment.Description</small>
-                                    <img src="@equipment.ImagePath" style="width: 100px" />
                                 </div>
                             </div>
-
                         }
                     }
                     else
@@ -126,5 +121,7 @@
 @section Scripts {
 
     <script src="~/js/equipments/add-equipment.js" asp-append-version="true"></script>
+    <script src="~/js/equipments/delete-equipment.js" asp-append-version="true"></script>
+    <script src="~/js/equipments/edit-equipment.js" asp-append-version="true"></script>
 
 }

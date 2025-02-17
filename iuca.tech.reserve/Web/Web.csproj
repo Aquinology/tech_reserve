@@ -23,10 +23,6 @@
 		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="wwwroot\uploads\" />
-	</ItemGroup>
-
 	<Target Name="ExcludeUploadsFolder" AfterTargets="Publish">
 		<ItemGroup>
 			<FilesToDelete Include="$(PublishDir)wwwroot\uploads\**" />

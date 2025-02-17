@@ -1,17 +1,19 @@
-﻿<div class="modal" tabindex="-1" id="addEquipmentModal">
+﻿@model EquipmentDTO
+
+<div class="modal" tabindex="-1" id="editEquipmentModal-@(Model.Id)">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add equipment</h5>
+                <h5 class="modal-title">Edit equipment</h5>
                 <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="equipmentForm" enctype="multipart/form-data">
-                    <partial name="_EquipmentForm.cshtml" model="@(new EquipmentDTO())" />
+                <form id="equipmentForm-@(Model.Id)" enctype="multipart/form-data">
+                    <partial name="_EquipmentForm.cshtml" model="@Model" />
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary shadow-none" onclick="addEquipment()">
+                <button type="submit" class="btn btn-primary shadow-none" onclick="editEquipment('@Model.Id')">
                     <i class="fa fa-floppy-o"></i>&nbsp; Save
                 </button>
             </div>

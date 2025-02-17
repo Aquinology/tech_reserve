@@ -34,6 +34,7 @@ public class EquipmentService : IEquipmentService
         {
             var equipments = await _db.Equipments
                 .AsNoTracking()
+                .OrderBy(x => x.EquipmentNumber)
                 .ToListAsync();
 
             return Result<IList<EquipmentDTO>>.Success(_mapper.Map<IList<EquipmentDTO>>(equipments));
@@ -112,9 +113,18 @@ public class EquipmentService : IEquipmentService
                 }
             }
 
+            if (equipmentDto.ImageFile != null && equipmentDto.ImageFile.Length != 0)
+            {
+                if (!string.IsNullOrEmpty(equipment.ImagePath))
+                {
+                    _fileService.DeleteFile(equipment.ImagePath);
+                }
+
+                equipment.ImagePath = await _fileService.SaveFile(equipmentDto.ImageFile);
+            }
+
             equipment.EquipmentNumber = equipmentDto.EquipmentNumber;
             equipment.SerialNumber = equipmentDto.SerialNumber;
-            equipment.ImagePath = equipmentDto.ImagePath;
             equipment.Description = equipmentDto.Description;
             equipment.Type = equipmentDto.Type;
             equipment.Status = equipmentDto.Status;
@@ -144,6 +154,11 @@ public class EquipmentService : IEquipmentService
             if (equipment == null)
             {
                 return Result.Error($"Equipment with id {equipmentId} not found.");
+            }
+
+            if (!string.IsNullOrEmpty(equipment.ImagePath))
+            {
+                _fileService.DeleteFile(equipment.ImagePath);
             }
 
             _db.Equipments.Remove(equipment);

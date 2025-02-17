@@ -28,7 +28,8 @@ public class FileService : IFileService
                 if (!Directory.Exists(uploadsFolder))
                     Directory.CreateDirectory(uploadsFolder);
 
-                var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
+                var fileExtension = Path.GetExtension(file.FileName);
+                var uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
                 var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                 using (var fileStreamOutput = new FileStream(filePath, FileMode.Create))

@@ -3,44 +3,40 @@
 <div class="row">
     <div class="col-12">
 
-        <form id="equipmentForm" enctype="multipart/form-data">
+        <input type="hidden" id="Id" />
 
-            <input type="hidden" id="Id" />
-
-            <div class="form-group my-2">
-                <label for="EquipmentNumber">
-                    Equipment number
-                    <span class="text-danger">*</span>
-                </label>
-                <input type="number" class="form-control shadow-none" asp-for="@Model.EquipmentNumber">
-            </div>
-            <div class="form-group my-2">
-                <label for="SerialNumber">
-                    Serial number
-                </label>
-                <input type="text" class="form-control shadow-none" placeholder="Serial number" asp-for="@Model.SerialNumber">
-            </div>
-            <div class="form-group my-2">
-                <label for="Description">
-                    Description
-                </label>
-                <textarea class="form-control shadow-none" placeholder="Description" rows="3" asp-for="@Model.Description"></textarea>
-            </div>
-            <div class="form-group my-2">
-                <label for="ImageFile">
-                    Image
-                </label>
-                <input type="file" class="form-control shadow-none" accept="image/*" asp-for="@Model.ImageFile">
-            </div>
-            <div class="form-group my-2">
-                <label for="Type">
-                    Type
-                </label>
-                <select class="form-control shadow-none" asp-items="@ViewBag.EquipmentTypes" asp-for="@Model.Type">
-                </select>
-            </div>
-
-        </form>
+        <div class="form-group my-2">
+            <label for="EquipmentNumber">
+                Equipment number
+                <span class="text-danger">*</span>
+            </label>
+            <input type="number" class="form-control shadow-none" asp-for="@Model.EquipmentNumber">
+        </div>
+        <div class="form-group my-2">
+            <label for="SerialNumber">
+                Serial number
+            </label>
+            <input type="text" class="form-control shadow-none" placeholder="Serial number" asp-for="@Model.SerialNumber">
+        </div>
+        <div class="form-group my-2">
+            <label for="Description">
+                Description
+            </label>
+            <textarea class="form-control shadow-none" placeholder="Description" rows="3" asp-for="@Model.Description"></textarea>
+        </div>
+        <div class="form-group my-2">
+            <label for="ImageFile">
+                Image
+            </label>
+            <input type="file" class="form-control shadow-none" accept="image/*" asp-for="@Model.ImageFile">
+        </div>
+        <div class="form-group my-2">
+            <label for="Type">
+                Type
+            </label>
+            <select class="form-control shadow-none" asp-items="@ViewBag.EquipmentTypes" asp-for="@Model.Type">
+            </select>
+        </div>
 
     </div>
 </div>

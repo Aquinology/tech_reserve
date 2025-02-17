@@ -50,6 +50,30 @@ public class EquipmentController : Controller
         return Json(new { isSuccess = result.IsSuccess, message = result.Message });
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Edit(int id, EquipmentDTO equipment)
+    {
+        if (!ModelState.IsValid)
+        {
+            var errorMessage = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .FirstOrDefault();
+
+            return Json(new { isSuccess = false, message = errorMessage });
+        }
+
+        var result = await _equipmentService.EditEquipment(id, equipment);
+        return Json(new { isSuccess = result.IsSuccess, message = result.Message });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(int equipmentId)
+    {
+        var result = await _equipmentService.DeleteEquipment(equipmentId);
+        return Json(new { isSuccess = result.IsSuccess, message = result.Message });
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

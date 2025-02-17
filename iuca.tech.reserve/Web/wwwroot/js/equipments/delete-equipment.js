@@ -1,10 +1,10 @@
-﻿var deleteUser = async function (userId) {
+﻿var deleteEquipment = async function (id) {
     try {
         const response = await $.ajax({
-            url: "/User/Delete",
+            url: "/Equipment/Delete",
             type: "POST",
             data: {
-                userId: userId
+                equipmentId: id
             }
         });
 
