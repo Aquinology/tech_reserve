@@ -56,6 +56,7 @@ public class EquipmentService : IEquipmentService
             }
 
             var equipmentExists = await _db.Equipments
+                .AsNoTracking()
                 .AnyAsync(x => x.EquipmentNumber == equipmentDto.EquipmentNumber);
 
             if (equipmentExists)
@@ -105,6 +106,7 @@ public class EquipmentService : IEquipmentService
             if (equipment.EquipmentNumber != equipmentDto.EquipmentNumber)
             {
                 var equipmentExists = await _db.Equipments
+                    .AsNoTracking()
                     .AnyAsync(x => x.EquipmentNumber == equipmentDto.EquipmentNumber);
 
                 if (equipmentExists)

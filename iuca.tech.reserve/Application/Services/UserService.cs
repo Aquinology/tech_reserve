@@ -4,6 +4,7 @@ using Application.Interfaces;
 using Application.Interfaces.Common;
 using AutoMapper;
 using Domain.Constants;
+using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -109,6 +110,19 @@ namespace Application.Services
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, role);
+
+                if (role == Roles.Client)
+                {
+                    var client = new Client()
+                    {
+                        ApplicationUserId = user.Id,
+                        Email = email
+                    };
+
+                    await _db.Clients.AddAsync(client);
+                    await _db.SaveChangesAsync();
+                }
+
                 return Result.Success($"User {email} created successfully.");
             }
             else

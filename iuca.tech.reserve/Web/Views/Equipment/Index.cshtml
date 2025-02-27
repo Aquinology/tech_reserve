@@ -1,4 +1,4 @@
-﻿@model IList<EquipmentDTO>
+﻿@model (IList<EquipmentDTO> Equipments, RequestDTO Request)
 
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
@@ -10,7 +10,7 @@
         {
             <div class="row pt-4">
                 <div class="col-12 text-end">
-                    <button class="btn btn-danger shadow-none my-lg-0 my-1" data-bs-toggle="modal" data-bs-target="#addEquipmentModal">
+                    <button class="btn btn-primary shadow-none rounded-4 my-lg-0 my-1" data-bs-toggle="modal" data-bs-target="#addEquipmentModal">
                         <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Add equipment
                     </button>
                 </div>
@@ -21,44 +21,98 @@
 
         if (User.IsInRole(Roles.Client))
         {
-            <div class="row pt-4">
-                <div class="col-6">
-                    <h4>Your request</h4>
-                </div>
-            </div>
+            @if (Model.Request != null)
+            {
+                string statusColor = "text-secondary";
 
-            <div class="card">
-                <div class="card-body">
+                if (Model.Request.Status == RequestStatus.Issued)
+                {
+                    statusColor = "text-danger";
+                }
+                else if (Model.Request.Status == RequestStatus.Pending)
+                {
+                    statusColor = "text-warning";
+                }
 
-                    <div class="row">
-                        <div class="col-12">
-                            Approved
-                        </div>
+                <div class="row pt-4">
+                    <div class="col-6">
+                        <h4>Your request</h4>
                     </div>
-
                 </div>
-            </div>
+
+                <div class="row pt-2">
+                    <div class="col-12">
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-1">
+                                    <i class="fa fa-circle @statusColor"></i>
+                                    @Enum.GetName(Model.Request.Status)
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-6 col-12">
+                                        <span>@Model.Request.Client.FullName</span>
+                                        <span>@Model.Request.Client.PhoneNumber</span>
+                                    </div>
+                                    <div class="col-lg-6 col-12">
+                                        @if (Model.Request.RequestEquipments != null && Model.Request.RequestEquipments.Any())
+                                        {
+                                            foreach (var equipmentRequest in Model.Request.RequestEquipments)
+                                            {
+                                                <span>@equipmentRequest.Equipment.Type.ToString() @equipmentRequest.Equipment.EquipmentNumber</span>
+                                                <a href="#" class="card-link" onclick="removeEquipmentFromRequest('@equipmentRequest.Equipment.Id')">Remove</a>
+                                                <br />
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
         }
 
         <div class="row pt-4">
-            <div class="col-6">
+            <div class="col-2">
                 <h4>Equipments</h4>
             </div>
         </div>
 
-        <div class="row pt-4">
+        <div class="row pt-2">
             <div class="col-12">
 
                 <div class="row">
-                    @if (Model != null && Model.Any())
+                    @if (Model.Equipments != null && Model.Equipments.Any())
                     {
-                        @foreach (var equipment in Model)
+                        @foreach (var equipment in Model.Equipments)
                         {
+                            string statusColor = "text-secondary";
+
+                            if(equipment.Status == EquipmentStatus.Available)
+                            {
+                                statusColor = "text-success";
+                            }
+                            else if (equipment.Status == EquipmentStatus.Occupied)
+                            {
+                                statusColor = "text-danger";
+                            }
+                            else if (equipment.Status == EquipmentStatus.Reserved)
+                            {
+                                statusColor = "text-warning";
+                            }
+
                             <div class="col-lg-3 col-md-4 col-6 p-2">
                                 <div class="card">
                                     <img src="@(string.IsNullOrEmpty(equipment.ImagePath) ? "uploads\\no-photo.jpg" : equipment.ImagePath)" class="card-img-top" style="height: 160px; object-fit:cover;">
                                     <div class="card-body">
-                                        <h5 class="card-title">@equipment.Type.ToString() @equipment.EquipmentNumber</h5>
+                                        <h5 class="card-title">
+                                            <i class="fa fa-circle @statusColor"></i>
+                                            @equipment.Type.ToString() @equipment.EquipmentNumber
+                                        </h5>
                                         <small class="card-subtitle mb-2 text-muted">
                                             @if (string.IsNullOrEmpty(equipment.SerialNumber))
                                             {
@@ -68,7 +122,7 @@
                                                 <text>@equipment.SerialNumber</text>
                                             }
                                         </small>
-                                        <p class="card-text">
+                                        <p class="card-text text-truncate" title="@equipment.Description">
                                             @if (string.IsNullOrEmpty(equipment.Description))
                                             {
                                                 <text>No description</text>
@@ -85,6 +139,10 @@
                                             <a href="#" class="card-link" onclick="deleteEquipment('@equipment.Id')">Delete</a>
                                             <a href="#" class="card-link" data-bs-toggle="modal" data-bs-target="#editEquipmentModal-@(equipment.Id)">Edit</a>
                                         }
+                                        @if (User.IsInRole(Roles.Client))
+                                        {
+                                            <a href="#" class="card-link" onclick="addEquipmentToRequest('@equipment.Id')">Add</a>
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -92,7 +150,7 @@
                     }
                     else
                     {
-                        <span>Нет записей</span>
+                        <span>No equipment</span>
                     }
                 </div>
 
@@ -120,8 +178,10 @@
 
 @section Scripts {
 
-    <script src="~/js/equipments/add-equipment.js" asp-append-version="true"></script>
+    <script src="~/js/equipments/create-equipment.js" asp-append-version="true"></script>
     <script src="~/js/equipments/delete-equipment.js" asp-append-version="true"></script>
     <script src="~/js/equipments/edit-equipment.js" asp-append-version="true"></script>
+    <script src="~/js/requests/add-equipment-to-request.js" asp-append-version="true"></script>
+    <script src="~/js/requests/remove-equipment-from-request.js" asp-append-version="true"></script>
 
 }

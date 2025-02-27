@@ -1,8 +1,8 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
-using Application.Interfaces.Common;
 using Domain.Enums;
 using Domain.Exceptions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Diagnostics;
@@ -11,26 +11,32 @@ namespace Web.Controllers;
 
 public class EquipmentController : Controller
 {
-    private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly UserManager<IdentityUser> _userManager;
     private readonly IEquipmentService _equipmentService;
-    private readonly IFileService _fileService;
+    private readonly IRequestService _requestService;
 
-    public EquipmentController(IWebHostEnvironment webHostEnvironment,
+    public EquipmentController(UserManager<IdentityUser> userManager,
         IEquipmentService equipmentService,
-        IFileService fileService)
+        IRequestService requestService)
     {
-        _webHostEnvironment = webHostEnvironment;
+        _userManager = userManager;
         _equipmentService = equipmentService;
-        _fileService = fileService;
+        _requestService = requestService;
     }
 
     public async Task<IActionResult> Index()
     {
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        if (currentUser == null)
+            return View();
+
         var equipments = await _equipmentService.GetAllEquipments();
+        var request = await _requestService.GetActualRequest(currentUser.Id);
 
         ViewBag.EquipmentTypes = new SelectList(Enum.GetValues(typeof(EquipmentType)));
 
-        return View(equipments.Data);
+        return View((equipments.Data, request.Data));
     }
 
     [HttpPost]
@@ -51,7 +57,7 @@ public class EquipmentController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(int id, EquipmentDTO equipment)
+    public async Task<IActionResult> Edit(int equipmentId, EquipmentDTO equipment)
     {
         if (!ModelState.IsValid)
         {
@@ -63,7 +69,7 @@ public class EquipmentController : Controller
             return Json(new { isSuccess = false, message = errorMessage });
         }
 
-        var result = await _equipmentService.EditEquipment(id, equipment);
+        var result = await _equipmentService.EditEquipment(equipmentId, equipment);
         return Json(new { isSuccess = result.IsSuccess, message = result.Message });
     }
 

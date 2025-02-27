@@ -1,6 +1,4 @@
-﻿@using Microsoft.AspNetCore.Identity;
-
-@model IList<(IdentityUser User, IList<string> Roles)>
+﻿@model IList<(IdentityUser User, IList<string> Roles)>
 
 <div class="container">
 
@@ -25,20 +23,20 @@
                     <i class="fa fa-circle-o-notch fa-spin"></i>&nbsp; Generating...
                 </span>
             </button>
-            <button class="btn btn-primary shadow-none rounded-4 my-lg-0 my-1" onclick="openModal()">
+            <button class="btn btn-primary shadow-none rounded-4 my-lg-0 my-1" data-bs-toggle="modal" data-bs-target="#addUserModal">
                 <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Create user
             </button>
         </div>
     </div>
 
-    <div class="modal" id="userModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+    <div class="modal" tabindex="-1" id="addUserModal">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Create user</h5>
-                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close" onclick="closeModal()"></button>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body py-4">
+                <div class="modal-body">
                     <div class="form-group my-2">
                         <label for="email">
                             Email
@@ -55,7 +53,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary shadow-none rounded-4" onclick="createUser()">Create</button>
+                    <button type="submit" class="btn btn-primary shadow-none rounded-4" onclick="createUser()">
+                        <i class="fa fa-floppy-o"></i>&nbsp; Save
+                    </button>
                 </div>
             </div>
         </div>
@@ -102,20 +102,10 @@
 </div>
 
 @section Scripts {
+
     <script src="~/js/settings/create-user.js" asp-append-version="true"></script>
     <script src="~/js/settings/delete-user.js" asp-append-version="true"></script>
     <script src="~/js/settings/import-clients.js" asp-append-version="true"></script>
     <script src="~/js/settings/generate-client-accounts.js" asp-append-version="true"></script>
 
-    <script>
-
-        function openModal() {
-            $('#userModal').modal('show');
-        }
-
-        function closeModal() {
-            $('#userModal').modal('hide');
-        }
-
-    </script>
 }

@@ -1,7 +1,7 @@
-﻿var deleteEquipment = async function (equipmentId) {
+﻿var removeEquipmentFromRequest = async function (equipmentId) {
     try {
         const response = await $.ajax({
-            url: "/Equipment/Delete",
+            url: "/Request/RemoveEquipmentFromRequest",
             type: "POST",
             data: {
                 equipmentId: equipmentId
@@ -16,6 +16,6 @@
     }
     catch (error) {
         console.log(error);
-        showPopupModal(CONSTS.MODAL_FAIL, 'Error', 'An error occurred while deleting.');
+        showPopupModal(CONSTS.MODAL_FAIL, 'Error', 'An error occurred while removing.');
     }
 }

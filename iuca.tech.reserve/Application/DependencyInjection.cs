@@ -14,6 +14,7 @@ public static class DependencyInjection
         services.AddScoped<IImportDataService, ImportDataService>();
         services.AddScoped<IEquipmentService, EquipmentService>();
         services.AddScoped<IRequestService, RequestService>();
+        services.AddScoped<IEquipmentRequestService, EquipmentRequestService>();
 
         return services;
     }

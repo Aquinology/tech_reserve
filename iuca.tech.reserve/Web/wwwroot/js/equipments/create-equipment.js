@@ -1,14 +1,12 @@
-﻿var editEquipment = async function (equipmentId) {
+﻿var createEquipment = async function () {
 
     event.preventDefault();
 
-    var formData = new FormData(document.getElementById("equipmentForm-" + equipmentId));
-
-    formData.append("equipmentId", equipmentId);
+    var formData = new FormData(document.getElementById("equipmentForm"));
 
     try {
         const response = await $.ajax({
-            url: "/Equipment/Edit",
+            url: "/Equipment/Create",
             type: "POST",
             data: formData,
             contentType: false,
@@ -23,6 +21,6 @@
     }
     catch (error) {
         console.log(error);
-        showPopupModal(CONSTS.MODAL_FAIL, 'Error', 'An error occurred while editing.');
+        showPopupModal(CONSTS.MODAL_FAIL, 'Error', 'An error occurred while creatting.');
     }
 }

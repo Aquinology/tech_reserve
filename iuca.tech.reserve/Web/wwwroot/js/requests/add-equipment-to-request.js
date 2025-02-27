@@ -1,16 +1,11 @@
-﻿var addEquipment = async function () {
-
-    event.preventDefault();
-
-    var formData = new FormData(document.getElementById("equipmentForm"));
-
+﻿var addEquipmentToRequest = async function (equipmentId) {
     try {
         const response = await $.ajax({
-            url: "/Equipment/Create",
+            url: "/Request/AddEquipmentToRequest",
             type: "POST",
-            data: formData,
-            contentType: false,
-            processData: false
+            data: {
+                equipmentId: equipmentId
+            }
         });
 
         if (response.isSuccess) {

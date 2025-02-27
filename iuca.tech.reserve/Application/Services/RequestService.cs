@@ -14,11 +14,11 @@ public class RequestService : IRequestService
 {
     private readonly IApplicationDbContext _db;
     private readonly IMapper _mapper;
-    private readonly ILogger<UserService> _logger;
+    private readonly ILogger<RequestService> _logger;
 
     public RequestService(IApplicationDbContext db,
         IMapper mapper,
-        ILogger<UserService> logger)
+        ILogger<RequestService> logger)
     {
         _db = db;
         _mapper = mapper;
@@ -42,33 +42,74 @@ public class RequestService : IRequestService
         }
     }
 
-    public async Task<Result> CreateRequest(RequestDTO requestDto)
+    public async Task<Result<RequestDTO>> GetActualRequest(string clientId)
     {
         try
         {
-            if (requestDto == null)
-            {
-                return Result.Error("requestDto is null.");
-            }
+            var request = await _db.Requests
+                .AsNoTracking()
+                .Include(x => x.Client)
+                .Include(x => x.RequestEquipments)
+                .ThenInclude(x => x.Equipment)
+                .FirstOrDefaultAsync(x => x.ClientId == clientId &&
+                    (x.Status == RequestStatus.Pending ||
+                    x.Status == RequestStatus.Issued));
 
-            var requestExists = await _db.Requests
-                .AnyAsync(x => x.ClientId == requestDto.ClientId);
-
-            if (requestExists)
-            {
-                return Result.Error($"Request for client with id {requestDto.ClientId} already exists.");
-            }
-
-            var request = _mapper.Map<Request>(requestDto);
-            await _db.Requests.AddAsync(request);
-            await _db.SaveChangesAsync();
-
-            return Result.Success("Request created successfully.");
+            return Result<RequestDTO>.Success(_mapper.Map<RequestDTO>(request));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating request: {Message}", ex.Message);
-            return Result.Error("An error occurred while creating request.");
+            _logger.LogError(ex, "Error getting request: {Message}", ex.Message);
+            return Result<RequestDTO>.Error("An error occurred while getting request.");
+        }
+    }
+
+    public async Task<Result<int>> EnsurePendingRequestId(string clientId)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(clientId))
+            {
+                return Result<int>.Error("clientId is null.");
+            }
+
+            var existingRequest = await _db.Requests
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.ClientId == clientId &&
+                    x.Status == RequestStatus.Pending);
+
+            if (existingRequest != null)
+            {
+                return Result<int>.Success(existingRequest.Id, "Request found successfully.");
+            }
+
+            var issuedRequestExists = await _db.Requests
+                .AsNoTracking()
+                .AnyAsync(x => x.ClientId == clientId &&
+                    x.Status == RequestStatus.Issued);
+
+            if (issuedRequestExists)
+            {
+                return Result<int>.Error("You cannot take the equipment until you return the previous one.");
+            }
+
+            var request = new Request()
+            {
+                ClientId = clientId,
+                Status = RequestStatus.Pending,
+                IssuedDate = DateTime.MinValue,
+                ReturnedDate = DateTime.MinValue
+            };
+
+            await _db.Requests.AddAsync(request);
+            await _db.SaveChangesAsync();
+
+            return Result<int>.Success(request.Id, "Request created successfully.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating request for client {ClientId}: {Message}", clientId, ex.Message);
+            return Result<int>.Error($"An error occurred while creating request for client {clientId}.");
         }
     }
 
