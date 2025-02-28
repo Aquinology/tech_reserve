@@ -1,7 +1,7 @@
 ﻿var removeEquipmentFromRequest = async function (equipmentId) {
     try {
         const response = await $.ajax({
-            url: "/Request/RemoveEquipmentFromRequest",
+            url: "/Requests/RemoveEquipmentFromRequest",
             type: "POST",
             data: {
                 equipmentId: equipmentId

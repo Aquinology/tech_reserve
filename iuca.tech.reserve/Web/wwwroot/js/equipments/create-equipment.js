@@ -6,7 +6,7 @@
 
     try {
         const response = await $.ajax({
-            url: "/Equipment/Create",
+            url: "/Equipments/Create",
             type: "POST",
             data: formData,
             contentType: false,

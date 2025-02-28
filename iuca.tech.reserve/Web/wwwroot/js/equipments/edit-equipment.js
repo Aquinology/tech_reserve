@@ -8,7 +8,7 @@
 
     try {
         const response = await $.ajax({
-            url: "/Equipment/Edit",
+            url: "/Equipments/Edit",
             type: "POST",
             data: formData,
             contentType: false,
