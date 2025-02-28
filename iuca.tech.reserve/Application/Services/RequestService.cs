@@ -25,12 +25,21 @@ public class RequestService : IRequestService
         _logger = logger;
     }
 
-    public async Task<Result<IList<RequestDTO>>> GetAllRequests()
+    public async Task<Result<IList<RequestDTO>>> GetRequests(RequestStatus? status = null)
     {
         try
         {
-            var requests = await _db.Requests
-                .AsNoTracking()
+            var query = _db.Requests.AsNoTracking();
+
+            if (status.HasValue)
+            {
+                query = query.Where(x => x.Status == status);
+            }
+
+            var requests = await query
+                .Include(x => x.Client)
+                .Include(x => x.RequestEquipments)
+                .ThenInclude(x => x.Equipment)
                 .ToListAsync();
 
             return Result<IList<RequestDTO>>.Success(_mapper.Map<IList<RequestDTO>>(requests));
@@ -46,6 +55,11 @@ public class RequestService : IRequestService
     {
         try
         {
+            if (string.IsNullOrEmpty(clientId))
+            {
+                return Result<RequestDTO>.Error("clientId is null or empty.");
+            }
+
             var request = await _db.Requests
                 .AsNoTracking()
                 .Include(x => x.Client)
@@ -59,8 +73,8 @@ public class RequestService : IRequestService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting request: {Message}", ex.Message);
-            return Result<RequestDTO>.Error("An error occurred while getting request.");
+            _logger.LogError(ex, "Error getting request for client with id {ClientId}: {Message}", clientId, ex.Message);
+            return Result<RequestDTO>.Error($"An error occurred while getting request for client with id {clientId}.");
         }
     }
 
@@ -70,7 +84,7 @@ public class RequestService : IRequestService
         {
             if (string.IsNullOrEmpty(clientId))
             {
-                return Result<int>.Error("clientId is null.");
+                return Result<int>.Error("clientId is null or empty.");
             }
 
             var existingRequest = await _db.Requests
@@ -108,8 +122,8 @@ public class RequestService : IRequestService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating request for client {ClientId}: {Message}", clientId, ex.Message);
-            return Result<int>.Error($"An error occurred while creating request for client {clientId}.");
+            _logger.LogError(ex, "Error creating request for client with id {ClientId}: {Message}", clientId, ex.Message);
+            return Result<int>.Error($"An error occurred while creating request for client with id {clientId}.");
         }
     }
 
@@ -117,9 +131,9 @@ public class RequestService : IRequestService
     {
         try
         {
-            if (requestId == 0)
+            if (requestId <= 0)
             {
-                return Result.Error("requestId is 0.");
+                return Result.Error($"requestId contains an invalid value ({requestId}).");
             }
 
             var requests = await _db.Requests.FindAsync(requestId);
@@ -136,8 +150,8 @@ public class RequestService : IRequestService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error setting request status: {Message}", ex.Message);
-            return Result.Error("An error occurred while setting request status.");
+            _logger.LogError(ex, "Error setting status for request with id {RequestId}: {Message}", requestId, ex.Message);
+            return Result.Error($"An error occurred while setting status for request with id {requestId}.");
         }
     }
 
@@ -145,9 +159,9 @@ public class RequestService : IRequestService
     {
         try
         {
-            if (requestId == 0)
+            if (requestId <= 0)
             {
-                return Result.Error("requestId is 0.");
+                return Result.Error($"requestId contains an invalid value ({requestId}).");
             }
 
             var requests = await _db.Requests.FindAsync(requestId);
@@ -164,8 +178,8 @@ public class RequestService : IRequestService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error setting request issued date: {Message}", ex.Message);
-            return Result.Error("An error occurred while setting request issued date.");
+            _logger.LogError(ex, "Error setting issued date for request with id {RequestId}: {Message}", requestId, ex.Message);
+            return Result.Error($"An error occurred while setting issued date for request with id {requestId}.");
         }
     }
 
@@ -173,9 +187,9 @@ public class RequestService : IRequestService
     {
         try
         {
-            if (requestId == 0)
+            if (requestId <= 0)
             {
-                return Result.Error("requestId is 0.");
+                return Result.Error($"requestId contains an invalid value ({requestId}).");
             }
 
             var requests = await _db.Requests.FindAsync(requestId);
@@ -192,8 +206,8 @@ public class RequestService : IRequestService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error setting request returned date: {Message}", ex.Message);
-            return Result.Error("An error occurred while setting request returned date.");
+            _logger.LogError(ex, "Error setting returned date for request with id {RequestId}: {Message}", requestId, ex.Message);
+            return Result.Error($"An error occurred while setting returned date for request with id {requestId}.");
         }
     }
 }

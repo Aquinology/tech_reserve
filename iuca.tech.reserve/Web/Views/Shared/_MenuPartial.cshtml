@@ -9,11 +9,14 @@
     {
         if (User.IsInRole(Roles.Administrator))
         {
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false">Settings</a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" asp-controller="User" asp-action="Index">Users</a></li>
-                </ul>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Users" asp-action="Index">Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Requests" asp-action="Index">Requests</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Equipments" asp-action="Index">Equipments</a>
             </li>
         }
     }

@@ -1,0 +1,72 @@
+﻿@model IList<RequestDTO>
+
+<div class="container">
+
+    <div class="row pt-4">
+        <div class="col-6">
+            <h4>Requests</h4>
+        </div>
+        <div class="col-6">
+
+            <form method="post" asp-controller="Requests" asp-action="Index">
+                <div class="row justify-content-end">
+                    <div class="col-auto">
+                        <select class="form-control shadow-none" name="status" asp-items="ViewBag.RequestStatuses" onchange="this.form.submit()">
+                        </select>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="row pt-2">
+        <div class="col-12">
+
+            @if (Model != null && Model.Any())
+            {
+                foreach (var request in Model)
+                {
+                    string statusColor = "text-secondary";
+
+                    if (request.Status == RequestStatus.Issued)
+                    {
+                        statusColor = "text-danger";
+                    }
+                    else if (request.Status == RequestStatus.Pending)
+                    {
+                        statusColor = "text-warning";
+                    }
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-1">
+                                <i class="fa fa-circle @statusColor"></i>
+                                @Enum.GetName(request.Status)
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-6 col-12">
+                                    <span>@request.Client.FullName</span>
+                                    <span>@request.Client.PhoneNumber</span>
+                                </div>
+                                <div class="col-lg-6 col-12">
+                                    @if (request.RequestEquipments != null && request.RequestEquipments.Any())
+                                    {
+                                        foreach (var equipmentRequest in request.RequestEquipments)
+                                        {
+                                            <span>@equipmentRequest.Equipment.Type.ToString() @equipmentRequest.Equipment.EquipmentNumber</span>
+                                            <br />
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+</div>

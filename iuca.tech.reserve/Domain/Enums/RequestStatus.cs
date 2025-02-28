@@ -2,7 +2,7 @@
 
 public enum RequestStatus
 {
-    Undefined = 0,
+    None = 0,
     Canceled,
     Pending,
     Rejected,

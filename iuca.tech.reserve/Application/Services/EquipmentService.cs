@@ -28,7 +28,7 @@ public class EquipmentService : IEquipmentService
         _fileService = fileService;
     }
 
-    public async Task<Result<IList<EquipmentDTO>>> GetAllEquipments()
+    public async Task<Result<IList<EquipmentDTO>>> GetEquipments()
     {
         try
         {
@@ -43,6 +43,31 @@ public class EquipmentService : IEquipmentService
         {
             _logger.LogError(ex, "Error getting equipments: {Message}", ex.Message);
             return Result<IList<EquipmentDTO>>.Error("An error occurred while getting equipments.");
+        }
+    }
+
+    public async Task<Result<EquipmentDTO>> GetEquipment(int equipmentId)
+    {
+        try
+        {
+            if (equipmentId <= 0)
+            {
+                return Result<EquipmentDTO>.Error($"equipmentId contains an invalid value ({equipmentId}).");
+            }
+
+            var equipment = await _db.Equipments.FindAsync(equipmentId);
+
+            if (equipment == null)
+            {
+                return Result<EquipmentDTO>.Error($"Equipment with id {equipmentId} not found.");
+            }
+
+            return Result<EquipmentDTO>.Success(_mapper.Map<EquipmentDTO>(equipment));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting equipment with id {EquipmentId}: {Message}", equipmentId, ex.Message);
+            return Result<EquipmentDTO>.Error($"An error occurred while getting equipment with id {equipmentId}.");
         }
     }
 
@@ -86,9 +111,9 @@ public class EquipmentService : IEquipmentService
     {
         try
         {
-            if (equipmentId == 0)
+            if (equipmentId <= 0)
             {
-                return Result.Error("equipmentId is 0.");
+                return Result.Error($"equipmentId contains an invalid value ({equipmentId}).");
             }
 
             if (equipmentDto == null)
@@ -137,8 +162,8 @@ public class EquipmentService : IEquipmentService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error editing equipment: {Message}", ex.Message);
-            return Result.Error("An error occurred while editing equipment.");
+            _logger.LogError(ex, "Error editing equipment with id {EquipmentId}: {Message}", equipmentId, ex.Message);
+            return Result.Error($"An error occurred while editing equipment with id {equipmentId}.");
         }
     }
 
@@ -146,9 +171,9 @@ public class EquipmentService : IEquipmentService
     {
         try
         {
-            if (equipmentId == 0)
+            if (equipmentId <= 0)
             {
-                return Result.Error("equipmentId is 0.");
+                return Result.Error($"equipmentId contains an invalid value ({equipmentId}).");
             }
 
             var equipment = await _db.Equipments.FindAsync(equipmentId);
@@ -170,8 +195,8 @@ public class EquipmentService : IEquipmentService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting equipment: {Message}", ex.Message);
-            return Result.Error("An error occurred while deleting equipment.");
+            _logger.LogError(ex, "Error deleting equipment with id {EquipmentId}: {Message}", equipmentId, ex.Message);
+            return Result.Error($"An error occurred while deleting equipment with id {equipmentId}.");
         }
     }
 
@@ -179,9 +204,9 @@ public class EquipmentService : IEquipmentService
     {
         try
         {
-            if (equipmentId == 0)
+            if (equipmentId <= 0)
             {
-                return Result.Error("equipmentId is 0.");
+                return Result.Error($"equipmentId contains an invalid value ({equipmentId}).");
             }
 
             var equipment = await _db.Equipments.FindAsync(equipmentId);
@@ -198,8 +223,8 @@ public class EquipmentService : IEquipmentService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error setting equipment status: {Message}", ex.Message);
-            return Result.Error("An error occurred while setting equipment status.");
+            _logger.LogError(ex, "Error setting status for equipment with id {EquipmentId}: {Message}", equipmentId, ex.Message);
+            return Result.Error($"An error occurred while setting status for equipment with id {equipmentId}.");
         }
     }
 }

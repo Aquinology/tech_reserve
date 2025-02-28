@@ -1,7 +1,9 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
+using Domain.Constants;
 using Domain.Enums;
 using Domain.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,13 +11,13 @@ using System.Diagnostics;
 
 namespace Web.Controllers;
 
-public class EquipmentController : Controller
+public class EquipmentsController : Controller
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IEquipmentService _equipmentService;
     private readonly IRequestService _requestService;
 
-    public EquipmentController(UserManager<IdentityUser> userManager,
+    public EquipmentsController(UserManager<IdentityUser> userManager,
         IEquipmentService equipmentService,
         IRequestService requestService)
     {
@@ -31,14 +33,15 @@ public class EquipmentController : Controller
         if (currentUser == null)
             return View();
 
-        var equipments = await _equipmentService.GetAllEquipments();
-        var request = await _requestService.GetActualRequest(currentUser.Id);
+        var equipmentsResult = await _equipmentService.GetEquipments();
+        var requestResult = await _requestService.GetActualRequest(currentUser.Id);
 
         ViewBag.EquipmentTypes = new SelectList(Enum.GetValues(typeof(EquipmentType)));
 
-        return View((equipments.Data, request.Data));
+        return View((equipmentsResult.Data, requestResult.Data));
     }
 
+    [Authorize(Roles = Roles.Administrator)]
     [HttpPost]
     public async Task<IActionResult> Create(EquipmentDTO equipment)
     {
@@ -56,6 +59,7 @@ public class EquipmentController : Controller
         return Json(new { isSuccess = result.IsSuccess, message = result.Message });
     }
 
+    [Authorize(Roles = Roles.Administrator)]
     [HttpPost]
     public async Task<IActionResult> Edit(int equipmentId, EquipmentDTO equipment)
     {
@@ -73,6 +77,7 @@ public class EquipmentController : Controller
         return Json(new { isSuccess = result.IsSuccess, message = result.Message });
     }
 
+    [Authorize(Roles = Roles.Administrator)]
     [HttpPost]
     public async Task<IActionResult> Delete(int equipmentId)
     {

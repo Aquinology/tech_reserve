@@ -34,26 +34,40 @@ public class EquipmentRequestService : IEquipmentRequestService
     {
         try
         {
-            if (string.IsNullOrEmpty(clientId))
+            var requestIdResult = await _requestService.EnsurePendingRequestId(clientId);
+
+            if (!requestIdResult.IsSuccess)
             {
-                return Result.Error("clientId is null.");
+                return Result.Error(requestIdResult.Message);
             }
 
-            if (equipmentId == 0)
+            var equipmentResult = await _equipmentService.GetEquipment(equipmentId);
+
+            if (!equipmentResult.IsSuccess)
             {
-                return Result.Error("equipmentId is 0.");
+                return Result.Error(equipmentResult.Message);
             }
 
-            var result = await _requestService.EnsurePendingRequestId(clientId);
-
-            if (!result.IsSuccess)
+            if (equipmentResult.Data.Status == EquipmentStatus.Occupied)
             {
-                return Result.Error(result.Message);
+                return Result.Error("This equipment is currently occupied.");
+            } else if (equipmentResult.Data.Status == EquipmentStatus.Reserved)
+            {
+                return Result.Error("This equipment is already reserved.");
+            }
+
+            var existingEquipmentInRequest = await _db.EquipmentRequests
+                .AsNoTracking()
+                .AnyAsync(x => x.RequestId == requestIdResult.Data && x.EquipmentId == equipmentId);
+
+            if (existingEquipmentInRequest)
+            {
+                return Result.Error("You have already reserved this equipment.");
             }
 
             var equipmentRequest = new EquipmentRequest()
             {
-                RequestId = result.Data,
+                RequestId = requestIdResult.Data,
                 EquipmentId = equipmentId
             };
 
@@ -75,31 +89,33 @@ public class EquipmentRequestService : IEquipmentRequestService
     {
         try
         {
-            if (string.IsNullOrEmpty(clientId))
+            var requestIdResult = await _requestService.EnsurePendingRequestId(clientId);
+
+            if (!requestIdResult.IsSuccess)
             {
-                return Result.Error("clientId is null.");
+                return Result.Error(requestIdResult.Message);
             }
 
-            if (equipmentId == 0)
+            var equipmentResult = await _equipmentService.GetEquipment(equipmentId);
+
+            if (!equipmentResult.IsSuccess)
             {
-                return Result.Error("equipmentId is 0.");
+                return Result.Error(equipmentResult.Message);
             }
 
-            var result = await _requestService.EnsurePendingRequestId(clientId);
-
-            if (!result.IsSuccess)
+            if (equipmentResult.Data.Status == EquipmentStatus.Occupied)
             {
-                return Result.Error(result.Message);
+                return Result.Error("You cannot remove equipment that is already occupied.");
             }
 
             var equipmentRequest = _db.EquipmentRequests
                 .AsNoTracking()
-                .FirstOrDefault(x => x.RequestId == result.Data &&
+                .FirstOrDefault(x => x.RequestId == requestIdResult.Data &&
                     x.EquipmentId == equipmentId);
 
             if (equipmentRequest == null)
             {
-                return Result.Error($"This equipment not found in request {result.Data}.");
+                return Result.Error($"This equipment not found in request {requestIdResult.Data}.");
             }
 
             await _equipmentService.SetEquipmentStatus(equipmentId, EquipmentStatus.Available);

@@ -2,7 +2,7 @@
 
 public enum EquipmentStatus
 {
-    Undefined = 0,
+    None = 0,
     Available,
     Reserved,
     Occupied

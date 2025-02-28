@@ -22,7 +22,7 @@ var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Equipment/Error");
+    app.UseExceptionHandler("/Equipments/Error");
     app.UseHsts();
 }
 else
@@ -53,6 +53,6 @@ app.UseStatusCodePages(context =>
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Equipment}/{action=Index}/{id?}");
+    pattern: "{controller=Equipments}/{action=Index}/{id?}");
 
 app.Run();
