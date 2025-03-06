@@ -3,7 +3,7 @@
         setButtonLoading(button);
 
         const response = await $.ajax({
-            url: "/User/GenerateClientAccounts",
+            url: "/Users/GenerateClientAccounts",
             type: "POST",
             cache: false
         });

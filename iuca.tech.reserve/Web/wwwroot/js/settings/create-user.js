@@ -7,7 +7,7 @@
 
     try {
         const response = await $.ajax({
-            url: "/User/Create",
+            url: "/Users/Create",
             type: "POST",
             data: {
                 email: email,

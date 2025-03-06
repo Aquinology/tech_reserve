@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace Web.Controllers;
 
 [Authorize(Roles = Roles.Administrator)]
-public class UserController : Controller
+public class UsersController : Controller
 {
-    private readonly ILogger<UserController> _logger;
+    private readonly ILogger<UsersController> _logger;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IUserService _userService;
 
-    public UserController(ILogger<UserController> logger,
+    public UsersController(ILogger<UsersController> logger,
         UserManager<IdentityUser> userManager,
         IUserService userService)
     {
