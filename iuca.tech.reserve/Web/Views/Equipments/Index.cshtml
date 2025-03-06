@@ -23,17 +23,6 @@
         {
             @if (Model.Request != null)
             {
-                string statusColor = "text-secondary";
-
-                if (Model.Request.Status == RequestStatus.Issued)
-                {
-                    statusColor = "text-danger";
-                }
-                else if (Model.Request.Status == RequestStatus.Pending)
-                {
-                    statusColor = "text-warning";
-                }
-
                 <div class="row pt-4">
                     <div class="col-12">
                         <h4>Your request</h4>
@@ -46,7 +35,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title mb-1">
-                                    <i class="fa fa-circle @statusColor"></i>
+                                    <i class="fa fa-circle @Model.Request.Status.GetTextColorClass()"></i>
                                     @Enum.GetName(Model.Request.Status)
                                 </h5>
                             </div>
@@ -62,12 +51,21 @@
                                             foreach (var equipmentRequest in Model.Request.RequestEquipments)
                                             {
                                                 <span>@equipmentRequest.Equipment.Type.ToString() @equipmentRequest.Equipment.EquipmentNumber</span>
-                                                <a href="#" class="card-link" onclick="removeEquipmentFromRequest('@equipmentRequest.Equipment.Id')">Remove</a>
+                                                @if (equipmentRequest.Request.Status == RequestStatus.Pending)
+                                                {
+                                                    <a href="#" class="card-link" onclick="removeEquipmentFromRequest('@equipmentRequest.Equipment.Id')">Remove</a>
+                                                }
                                                 <br />
                                             }
                                         }
                                     </div>
                                 </div>
+                            </div>
+                            <div class="card-footer">
+                                @if (Model.Request.Status == RequestStatus.Pending)
+                                {
+                                    <a href="#" class="card-link" onclick="cancelRequest('@Model.Request.Id')">Cancel</a>
+                                }
                             </div>
                         </div>
 
@@ -90,27 +88,12 @@
                     {
                         @foreach (var equipment in Model.Equipments)
                         {
-                            string statusColor = "text-secondary";
-
-                            if(equipment.Status == EquipmentStatus.Available)
-                            {
-                                statusColor = "text-success";
-                            }
-                            else if (equipment.Status == EquipmentStatus.Occupied)
-                            {
-                                statusColor = "text-danger";
-                            }
-                            else if (equipment.Status == EquipmentStatus.Reserved)
-                            {
-                                statusColor = "text-warning";
-                            }
-
                             <div class="col-lg-3 col-md-4 col-6 p-2">
                                 <div class="card">
                                     <img src="@(string.IsNullOrEmpty(equipment.ImagePath) ? "uploads\\no-photo.jpg" : equipment.ImagePath)" class="card-img-top" style="height: 160px; object-fit:cover;">
                                     <div class="card-body">
                                         <h5 class="card-title">
-                                            <i class="fa fa-circle @statusColor"></i>
+                                            <i class="fa fa-circle @equipment.Status.GetTextColorClass()"></i>
                                             @equipment.Type.ToString() @equipment.EquipmentNumber
                                         </h5>
                                         <small class="card-subtitle mb-2 text-muted">
@@ -141,7 +124,12 @@
                                         }
                                         @if (User.IsInRole(Roles.Client))
                                         {
-                                            <a href="#" class="card-link" onclick="addEquipmentToRequest('@equipment.Id')">Add</a>
+                                            bool isEquipmentInRequest = Model.Request?.RequestEquipments?.Any(x => x.EquipmentId == equipment.Id) ?? false;
+
+                                            if (!isEquipmentInRequest)
+                                            {
+                                                <a href="#" class="card-link" onclick="addEquipmentToRequest('@equipment.Id')">Add</a>
+                                            }
                                         }
                                     </div>
                                 </div>
@@ -183,5 +171,6 @@
     <script src="~/js/equipments/edit-equipment.js" asp-append-version="true"></script>
     <script src="~/js/requests/add-equipment-to-request.js" asp-append-version="true"></script>
     <script src="~/js/requests/remove-equipment-from-request.js" asp-append-version="true"></script>
+    <script src="~/js/requests/cancel-request.js" asp-append-version="true"></script>
 
 }

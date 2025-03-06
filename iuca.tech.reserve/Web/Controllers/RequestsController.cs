@@ -58,4 +58,48 @@ public class RequestsController : Controller
         var result = await _equipmentRequestService.RemoveEquipmentFromRequest(currentUser.Id, equipmentId);
         return Json(new { isSuccess = result.IsSuccess, message = result.Message });
     }
+
+    [Authorize(Roles = Roles.Client)]
+    [HttpPost]
+    public async Task<IActionResult> CancelRequest(int requestId)
+    {
+        var result = await _requestService.SetRequestStatus(requestId, RequestStatus.Canceled);
+        return Json(new { isSuccess = result.IsSuccess, message = result.Message });
+    }
+
+    [Authorize(Roles = Roles.Administrator)]
+    [HttpPost]
+    public async Task<IActionResult> ApproveRequest(int requestId)
+    {
+        var result = await _requestService.SetRequestStatus(requestId, RequestStatus.Issued);
+
+        if (result.IsSuccess)
+        {
+            result = await _requestService.SetIssuedDate(requestId, DateTime.UtcNow);
+        }
+
+        return Json(new { isSuccess = result.IsSuccess, message = result.Message });
+    }
+
+    [Authorize(Roles = Roles.Administrator)]
+    [HttpPost]
+    public async Task<IActionResult> RejectRequest(int requestId)
+    {
+        var result = await _requestService.SetRequestStatus(requestId, RequestStatus.Rejected);
+        return Json(new { isSuccess = result.IsSuccess, message = result.Message });
+    }
+
+    [Authorize(Roles = Roles.Administrator)]
+    [HttpPost]
+    public async Task<IActionResult> ReturnEquipment(int requestId)
+    {
+        var result = await _requestService.SetRequestStatus(requestId, RequestStatus.Returned);
+
+        if (result.IsSuccess)
+        {
+            result = await _requestService.SetReturnedDate(requestId, DateTime.UtcNow);
+        }
+
+        return Json(new { isSuccess = result.IsSuccess, message = result.Message });
+    }
 }

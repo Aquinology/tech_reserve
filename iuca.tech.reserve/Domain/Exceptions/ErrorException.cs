@@ -1,9 +1,8 @@
-namespace Domain.Exceptions
-{
-    public class ErrorException
-    {
-        public string? RequestId { get; set; }
+namespace Domain.Exceptions;
 
-        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-    }
+public class ErrorException
+{
+    public string? RequestId { get; set; }
+
+    public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 }

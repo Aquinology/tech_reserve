@@ -40,6 +40,8 @@ public class RequestService : IRequestService
                 .Include(x => x.Client)
                 .Include(x => x.RequestEquipments)
                 .ThenInclude(x => x.Equipment)
+                .OrderByDescending(x => x.Status == RequestStatus.Pending)
+                .ThenByDescending(x => x.Id)
                 .ToListAsync();
 
             return Result<IList<RequestDTO>>.Success(_mapper.Map<IList<RequestDTO>>(requests));
@@ -136,7 +138,10 @@ public class RequestService : IRequestService
                 return Result.Error($"requestId contains an invalid value ({requestId}).");
             }
 
-            var requests = await _db.Requests.FindAsync(requestId);
+            var requests = await _db.Requests
+                .Include(x => x.RequestEquipments)
+                .ThenInclude(x => x.Equipment)
+                .FirstOrDefaultAsync(x => x.Id == requestId);
 
             if (requests == null)
             {
@@ -144,6 +149,19 @@ public class RequestService : IRequestService
             }
 
             requests.Status = status;
+
+            var equipmentStatus = status switch
+            {
+                RequestStatus.Pending => EquipmentStatus.Reserved,
+                RequestStatus.Issued => EquipmentStatus.Occupied,
+                _ => EquipmentStatus.Available
+            };
+
+            foreach (var equipment in requests.RequestEquipments)
+            {
+                equipment.Equipment.Status = equipmentStatus;
+            }
+
             await _db.SaveChangesAsync();
 
             return Result.Success("Request status set successfully.");

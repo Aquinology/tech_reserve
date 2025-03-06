@@ -50,7 +50,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("ApplicationUserId");
 
-                    b.ToTable("Clients");
+                    b.ToTable("Clients", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Equipment", b =>
@@ -60,6 +60,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
 
                     b.Property<int>("EquipmentNumber")
                         .HasColumnType("integer");
@@ -80,7 +84,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Equipments");
+                    b.ToTable("Equipments", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.EquipmentRequest", b =>
@@ -103,7 +107,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("RequestId");
 
-                    b.ToTable("EquipmentRequests");
+                    b.ToTable("EquipmentRequests", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Request", b =>
@@ -135,7 +139,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("Requests");
+                    b.ToTable("Requests", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
