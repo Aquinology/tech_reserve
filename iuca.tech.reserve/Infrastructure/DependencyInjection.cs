@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.Common;
+using Application.Services;
 using Ardalis.GuardClauses;
 using Infrastructure.Data;
 using Infrastructure.Services;
@@ -31,6 +32,9 @@ public static class DependencyInjection
 
         // File service
         services.AddScoped<IFileService, FileService>();
+
+        // Reservation cleanup service
+        services.AddHostedService<ReservationCleanupService>();
 
         // Seeds
         services.AddScoped<ApplicationDbContextInitialiser>();

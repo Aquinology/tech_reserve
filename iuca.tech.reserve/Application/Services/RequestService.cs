@@ -53,6 +53,25 @@ public class RequestService : IRequestService
         }
     }
 
+    public async Task<Result<IList<RequestDTO>>> GetExpiredRequests()
+    {
+        try
+        {
+            var requests = await _db.Requests
+                .Include(x => x.RequestEquipments)
+                .Where(x => x.Status == RequestStatus.Pending &&
+                    x.ReservedDate.AddMinutes(5) <= DateTime.UtcNow)
+                .ToListAsync();
+
+            return Result<IList<RequestDTO>>.Success(_mapper.Map<IList<RequestDTO>>(requests));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting expired requests: {Message}", ex.Message);
+            return Result<IList<RequestDTO>>.Error("An error occurred while getting expired requests.");
+        }
+    }
+
     public async Task<Result<RequestDTO>> GetActualRequest(string clientId)
     {
         try
@@ -113,6 +132,7 @@ public class RequestService : IRequestService
             {
                 ClientId = clientId,
                 Status = RequestStatus.Pending,
+                ReservedDate = DateTime.UtcNow,
                 IssuedDate = DateTime.MinValue,
                 ReturnedDate = DateTime.MinValue
             };
@@ -138,17 +158,17 @@ public class RequestService : IRequestService
                 return Result.Error($"requestId contains an invalid value ({requestId}).");
             }
 
-            var requests = await _db.Requests
+            var request = await _db.Requests
                 .Include(x => x.RequestEquipments)
                 .ThenInclude(x => x.Equipment)
                 .FirstOrDefaultAsync(x => x.Id == requestId);
 
-            if (requests == null)
+            if (request == null)
             {
                 return Result.Error($"Request with id {requestId} not found.");
             }
 
-            requests.Status = status;
+            request.Status = status;
 
             var equipmentStatus = status switch
             {
@@ -157,7 +177,7 @@ public class RequestService : IRequestService
                 _ => EquipmentStatus.Available
             };
 
-            foreach (var equipment in requests.RequestEquipments)
+            foreach (var equipment in request.RequestEquipments)
             {
                 equipment.Equipment.Status = equipmentStatus;
             }
@@ -173,6 +193,34 @@ public class RequestService : IRequestService
         }
     }
 
+    public async Task<Result> SetReservedDate(int requestId, DateTime date)
+    {
+        try
+        {
+            if (requestId <= 0)
+            {
+                return Result.Error($"requestId contains an invalid value ({requestId}).");
+            }
+
+            var request = await _db.Requests.FindAsync(requestId);
+
+            if (request == null)
+            {
+                return Result.Error($"Request with id {requestId} not found.");
+            }
+
+            request.ReservedDate = date;
+            await _db.SaveChangesAsync();
+
+            return Result.Success("Request reserved date set successfully.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error setting reserved date for request with id {RequestId}: {Message}", requestId, ex.Message);
+            return Result.Error($"An error occurred while setting reserved date for request with id {requestId}.");
+        }
+    }
+
     public async Task<Result> SetIssuedDate(int requestId, DateTime date)
     {
         try
@@ -182,14 +230,14 @@ public class RequestService : IRequestService
                 return Result.Error($"requestId contains an invalid value ({requestId}).");
             }
 
-            var requests = await _db.Requests.FindAsync(requestId);
+            var request = await _db.Requests.FindAsync(requestId);
 
-            if (requests == null)
+            if (request == null)
             {
                 return Result.Error($"Request with id {requestId} not found.");
             }
 
-            requests.IssuedDate = date;
+            request.IssuedDate = date;
             await _db.SaveChangesAsync();
 
             return Result.Success("Request issued date set successfully.");
@@ -210,14 +258,14 @@ public class RequestService : IRequestService
                 return Result.Error($"requestId contains an invalid value ({requestId}).");
             }
 
-            var requests = await _db.Requests.FindAsync(requestId);
+            var request = await _db.Requests.FindAsync(requestId);
 
-            if (requests == null)
+            if (request == null)
             {
                 return Result.Error($"Request with id {requestId} not found.");
             }
 
-            requests.ReturnedDate = date;
+            request.ReturnedDate = date;
             await _db.SaveChangesAsync();
 
             return Result.Success("Request returned date set successfully.");

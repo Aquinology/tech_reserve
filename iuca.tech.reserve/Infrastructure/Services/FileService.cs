@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces.Common;
-using Application.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -9,10 +8,10 @@ namespace Infrastructure.Services;
 public class FileService : IFileService
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly ILogger<EquipmentService> _logger;
+    private readonly ILogger<FileService> _logger;
 
     public FileService(IWebHostEnvironment webHostEnvironment,
-        ILogger<EquipmentService> logger)
+        ILogger<FileService> logger)
     {
         _webHostEnvironment = webHostEnvironment;
         _logger = logger;

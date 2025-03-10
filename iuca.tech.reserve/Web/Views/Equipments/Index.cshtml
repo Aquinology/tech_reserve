@@ -44,6 +44,19 @@
                                     <div class="col-lg-6 col-12">
                                         <span>@Model.Request.Client.FullName</span>
                                         <span>@Model.Request.Client.PhoneNumber</span>
+                                        <br />
+                                        @if (Model.Request.ReservedDate != DateTime.MinValue)
+                                        {
+                                            var timeLeft = Model.Request.ReservedDate.AddMinutes(5) - DateTime.UtcNow;
+                                            if (timeLeft > TimeSpan.Zero)
+                                            {
+                                                <span>Left: @timeLeft.Minutes min. @timeLeft.Seconds sec.</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Time is up.</span>
+                                            }
+                                        }
                                     </div>
                                     <div class="col-lg-6 col-12">
                                         @if (Model.Request.RequestEquipments != null && Model.Request.RequestEquipments.Any())

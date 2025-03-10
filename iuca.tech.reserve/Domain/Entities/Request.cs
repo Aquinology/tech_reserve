@@ -11,6 +11,7 @@ public class Request
 
     public RequestStatus Status { get; set; }
 
+    public DateTime ReservedDate { get; set; }
     public DateTime IssuedDate { get; set; }
     public DateTime ReturnedDate { get; set; }
 

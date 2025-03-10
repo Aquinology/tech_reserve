@@ -12,6 +12,7 @@ public class RequestDTO
 
     public RequestStatus Status { get; set; } = RequestStatus.Pending;
 
+    public DateTime ReservedDate { get; set; } = DateTime.MinValue;
     public DateTime IssuedDate { get; set; } = DateTime.MinValue;
     public DateTime ReturnedDate { get; set; } = DateTime.MinValue;
 

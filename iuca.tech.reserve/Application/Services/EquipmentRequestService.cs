@@ -131,4 +131,37 @@ public class EquipmentRequestService : IEquipmentRequestService
             return Result.Error($"An error occurred while removing equipment from request for client {clientId}.");
         }
     }
+
+    public async Task<Result> CancelExpiredRequests()
+    {
+        try
+        {
+            var expiredRequestsResult = await _requestService.GetExpiredRequests();
+
+            if (!expiredRequestsResult.IsSuccess)
+            {
+                return Result.Error(expiredRequestsResult.Message);
+            }
+
+            if (expiredRequestsResult.Data.Any())
+            {
+                foreach (var request in expiredRequestsResult.Data)
+                {
+                    await _requestService.SetRequestStatus(request.Id, RequestStatus.Canceled);
+
+                    foreach (var equipment in request.RequestEquipments)
+                    {
+                        await _equipmentService.SetEquipmentStatus(equipment.EquipmentId, EquipmentStatus.Available);
+                    }
+                }
+            }
+
+            return Result.Success("Expired requests cancelled successfully.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error cancelling expired requests: {Message}", ex.Message);
+            return Result.Error($"An error occurred while cancelling the expired requests.");
+        }
+    }
 }

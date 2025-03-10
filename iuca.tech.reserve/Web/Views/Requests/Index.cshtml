@@ -42,12 +42,12 @@
                                     <br />
                                     @if (request.IssuedDate != DateTime.MinValue)
                                     {
-                                        <span>@request.IssuedDate</span>
+                                        <span>@request.IssuedDate.ToLocalTime()</span>
                                     }
                                     <br />
                                     @if (request.ReturnedDate != DateTime.MinValue)
                                     {
-                                        <span>@request.ReturnedDate</span>
+                                        <span>@request.ReturnedDate.ToLocalTime()</span>
                                     }
                                 </div>
                                 <div class="col-lg-6 col-12">
