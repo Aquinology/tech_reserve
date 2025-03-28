@@ -1,7 +1,5 @@
 ﻿var createUser = async function () {
 
-    event.preventDefault();
-
     var email = $('#email').val();
     var role = $('#role').val();
 
@@ -12,8 +10,7 @@
             data: {
                 email: email,
                 role: role
-            },
-            cache: false
+            }
         });
 
         if (response.isSuccess) {

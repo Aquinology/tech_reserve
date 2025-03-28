@@ -1,0 +1,111 @@
+﻿@model EquipmentDTO
+
+<div class="modal" tabindex="-1" id="equipmentDetailsModal-@(Model.Id)">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Equipment details</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row my-3">
+                    <div class="col-3 text-muted">
+                        Number:
+                    </div>
+                    <div class="col-9">
+                        <strong>#@Model.EquipmentNumber</strong>
+                    </div>
+                </div>
+                <div class="row my-3">
+                    <div class="col-3 text-muted">
+                        SN:
+                    </div>
+                    <div class="col-9">
+                        @if (string.IsNullOrEmpty(Model.SerialNumber))
+                        {
+                            <span>-</span>
+                        }
+                        else
+                        {
+                            <span>@Model.SerialNumber</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="row my-3">
+                    <div class="col-3 text-muted">
+                        Type:
+                    </div>
+                    <div class="col-9">
+                        @Model.Type.ToString()
+                    </div>
+                </div>
+
+                <div class="row my-3">
+                    <div class="col-3 text-muted">
+                        Status:
+                    </div>
+                    <div class="col-9">
+                        <div class="badge badge-@Model.Status.GetTextColorClass()">
+                            @Model.Status.ToString()
+                        </div>
+                    </div>
+                </div>
+                @if (Model.Status == EquipmentStatus.Occupied || Model.Status == EquipmentStatus.Reserved)
+                {
+                    @if (User.IsInRole(Roles.Administrator))
+                    {
+                        <div class="row my-3">
+                            <div class="col-3 text-muted">
+                                Borrower:
+                            </div>
+                            <div class="col-9">
+                                @if (Model.Borrower != null)
+                                {
+                                    <span>@Model.Borrower.FullName</span>
+                                }
+                                else
+                                {
+                                    <span>Unknown</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+                
+                <div class="row my-3">
+                    <div class="col-3 text-muted">
+                        Description:
+                    </div>
+                    <div class="col-9">
+                        <p class="card-text text-truncate" title="@Model.Description">
+                            @if (string.IsNullOrEmpty(Model.Description))
+                            {
+                                <text>-</text>
+                            }
+                            else
+                            {
+                                <text>@Model.Description</text>
+                            }
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row my-3">
+                    <div class="col-3 text-muted">
+                        Image:
+                    </div>
+                    <div class="col-9">
+                        <img src="@(string.IsNullOrEmpty(Model.ImagePath) ? "uploads\\no-photo.jpg" : Model.ImagePath)" class="card-img-top" style="height: 160px; object-fit:cover;">
+                    </div>
+                </div>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary shadow-none rounded-4" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

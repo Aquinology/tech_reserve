@@ -1,0 +1,17 @@
+﻿@model ClientDTO
+
+<div class="row">
+    <div class="col-12">
+
+        <input type="hidden" asp-for="@Model.ApplicationUserId" />
+
+        <div class="form-group my-2">
+            <label for="PhoneNumber">
+                Phone number
+                <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="form-control shadow-none rounded-4" asp-for="@Model.PhoneNumber">
+        </div>
+
+    </div>
+</div>

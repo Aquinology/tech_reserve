@@ -1,0 +1,22 @@
+﻿@model ClientDTO
+
+<div class="modal" tabindex="-1" id="updatePhoneNumberModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update phone number</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="phoneNumberForm" enctype="multipart/form-data">
+                    <partial name="_ClientPhoneNumberForm.cshtml" model="@Model" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary shadow-none rounded-4" onclick="updatePhoneNumber('@Model.ApplicationUserId')">
+                    <i class="fa fa-floppy-o"></i>&nbsp; Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

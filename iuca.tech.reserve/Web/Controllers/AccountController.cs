@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Domain.Constants;
 
 namespace Web.Controllers;
 
@@ -61,9 +62,20 @@ public class AccountController : Controller
 
         var user = await _userManager.FindByEmailAsync(email);
 
-        return user != null 
-            ? await HandleExistingUser(user, info, returnUrl)
-            : HandleNewUser(email);
+        if (user == null)
+        {
+            var userResult = await _userService.CreateUser(email, Roles.Client);
+
+            if (!userResult.IsSuccess)
+            {
+                _logger.LogWarning($"Error to create user for email: {email}");
+                return RedirectToAction("UserNotFound");
+            }
+
+            user = await _userManager.FindByEmailAsync(email);
+        }
+
+        return await HandleExistingUser(user, info, returnUrl);
     }
 
     private async Task<IActionResult> HandleExistingUser(IdentityUser user, ExternalLoginInfo info, string returnUrl)
@@ -88,12 +100,6 @@ public class AccountController : Controller
 
         _logger.LogInformation($"User {user.Email} logged in using {info.LoginProvider}.");
         return LocalRedirect(returnUrl ?? Url.Content("~/"));
-    }
-
-    private IActionResult HandleNewUser(string email)
-    {
-        _logger.LogWarning($"User not found for email: {email}");
-        return RedirectToAction("UserNotFound");
     }
 
     private async Task<IdentityResult> AddExternalLoginIfNeeded(IdentityUser user, ExternalLoginInfo info)

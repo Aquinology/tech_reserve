@@ -1,7 +1,5 @@
 ﻿var editEquipment = async function (equipmentId) {
 
-    event.preventDefault();
-
     var formData = new FormData(document.getElementById("equipmentForm-" + equipmentId));
 
     formData.append("equipmentId", equipmentId);

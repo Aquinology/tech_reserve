@@ -30,7 +30,7 @@
                     <div class="card my-3">
                         <div class="card-header">
                             <h5 class="card-title mb-1">
-                                <i class="fa fa-circle @request.Status.GetTextColorClass()"></i>
+                                <i class="fa fa-circle text-@request.Status.GetTextColorClass()"></i>
                                 @Enum.GetName(request.Status)
                             </h5>
                         </div>
@@ -50,7 +50,7 @@
                                         <span>@request.ReturnedDate.ToLocalTime()</span>
                                     }
                                 </div>
-                                <div class="col-lg-6 col-12">
+                                <div class="col-lg-6 col-12 mt-3">
                                     @if (request.RequestEquipments != null && request.RequestEquipments.Any())
                                     {
                                         foreach (var equipmentRequest in request.RequestEquipments)

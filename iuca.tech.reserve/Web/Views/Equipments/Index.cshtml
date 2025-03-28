@@ -35,7 +35,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title mb-1">
-                                    <i class="fa fa-circle @Model.Request.Status.GetTextColorClass()"></i>
+                                    <i class="fa fa-circle text-@Model.Request.Status.GetTextColorClass()"></i>
                                     @Enum.GetName(Model.Request.Status)
                                 </h5>
                             </div>
@@ -44,8 +44,12 @@
                                     <div class="col-lg-6 col-12">
                                         <span>@Model.Request.Client.FullName</span>
                                         <span>@Model.Request.Client.PhoneNumber</span>
+                                        <a href="#" class="card-link" data-bs-toggle="modal" data-bs-target="#updatePhoneNumberModal">
+                                            <i class="fa fa-pencil-square-o"></i>
+                                        </a>
+                                        @(await Html.PartialAsync("~/Views/Clients/_UpdateNumberPhoneModal.cshtml", Model.Request.Client))
                                         <br />
-                                        @if (Model.Request.ReservedDate != DateTime.MinValue)
+                                        @if (Model.Request.Status == RequestStatus.Pending && Model.Request.ReservedDate != DateTime.MinValue)
                                         {
                                             var timeLeft = Model.Request.ReservedDate.AddMinutes(5) - DateTime.UtcNow;
                                             if (timeLeft > TimeSpan.Zero)
@@ -66,7 +70,9 @@
                                                 <span>@equipmentRequest.Equipment.Type.ToString() @equipmentRequest.Equipment.EquipmentNumber</span>
                                                 @if (equipmentRequest.Request.Status == RequestStatus.Pending)
                                                 {
-                                                    <a href="#" class="card-link" onclick="removeEquipmentFromRequest('@equipmentRequest.Equipment.Id')">Remove</a>
+                                                    <button type="button" class="btn btn-danger shadow-none rounded-4" onclick="removeEquipmentFromRequest('@equipmentRequest.Equipment.Id')">
+                                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                                    </button>
                                                 }
                                                 <br />
                                             }
@@ -101,49 +107,70 @@
                     {
                         @foreach (var equipment in Model.Equipments)
                         {
-                            <div class="col-lg-3 col-md-4 col-6 p-2">
-                                <div class="card">
-                                    <img src="@(string.IsNullOrEmpty(equipment.ImagePath) ? "uploads\\no-photo.jpg" : equipment.ImagePath)" class="card-img-top" style="height: 160px; object-fit:cover;">
+                            <partial name="_EquipmentDetailsModal.cshtml" model="@equipment" />
+
+                            @if (User.IsInRole(Roles.Administrator))
+                            {
+                                <partial name="_EditEquipmentModal.cshtml" model="@equipment" />
+                            }
+
+                            <div class="col-lg-3 col-md-4 col-12 p-2">
+                                <div class="card rounded-4 overflow-hidden">
                                     <div class="card-body">
-                                        <h5 class="card-title">
-                                            <i class="fa fa-circle @equipment.Status.GetTextColorClass()"></i>
-                                            @equipment.Type.ToString() @equipment.EquipmentNumber
-                                        </h5>
-                                        <small class="card-subtitle mb-2 text-muted">
+                                        <div class="row justify-content-between">
+                                            <div class="col-auto">
+                                                <h5>
+                                                    @equipment.Type.ToString() <strong class="text-primary"><small>#@equipment.EquipmentNumber</small></strong>
+                                                </h5>
+                                            </div>
+                                            <div class="col-auto text-end">
+                                                <div class="badge badge-@equipment.Status.GetTextColorClass()">
+                                                    @equipment.Status
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <small class="card-subtitle mb-2">
+                                            SN:
                                             @if (string.IsNullOrEmpty(equipment.SerialNumber))
                                             {
-                                                <text>No serial</text>
+                                                <span class="text-muted">-</span>
                                             } else
                                             {
-                                                <text>@equipment.SerialNumber</text>
+                                                <span class="text-muted">@equipment.SerialNumber</span>
                                             }
                                         </small>
-                                        <p class="card-text text-truncate" title="@equipment.Description">
-                                            @if (string.IsNullOrEmpty(equipment.Description))
-                                            {
-                                                <text>No description</text>
-                                            }
-                                            else
-                                            {
-                                                <text>@equipment.Description</text>
-                                            }
-                                        </p>
-                                        @if (User.IsInRole(Roles.Administrator))
-                                        {
-                                            <partial name="_EditEquipmentModal.cshtml" model="@equipment" />
+                                    </div>
+                                    <div class="card-footer bg-white">
+                                        <div class="row">
+                                            <div class="col-12 text-end">
 
-                                            <a href="#" class="card-link" onclick="deleteEquipment('@equipment.Id')">Delete</a>
-                                            <a href="#" class="card-link" data-bs-toggle="modal" data-bs-target="#editEquipmentModal-@(equipment.Id)">Edit</a>
-                                        }
-                                        @if (User.IsInRole(Roles.Client))
-                                        {
-                                            bool isEquipmentInRequest = Model.Request?.RequestEquipments?.Any(x => x.EquipmentId == equipment.Id) ?? false;
+                                                @if (User.IsInRole(Roles.Client))
+                                                {
+                                                    bool isEquipmentInRequest = Model.Request?.RequestEquipments?.Any(x => x.EquipmentId == equipment.Id) ?? false;
 
-                                            if (!isEquipmentInRequest)
-                                            {
-                                                <a href="#" class="card-link" onclick="addEquipmentToRequest('@equipment.Id')">Add</a>
-                                            }
-                                        }
+                                                    if (!isEquipmentInRequest)
+                                                    {
+                                                        <button type="button" class="btn btn-primary shadow-none rounded-4" title="Reserve equipment" onclick="addEquipmentToRequest('@equipment.Id')">
+                                                            <i class="fa fa-plus" aria-hidden="true"></i> Reserve
+                                                        </button>
+                                                    }
+                                                }
+
+                                                <button type="button" class="btn btn-primary shadow-none rounded-4" title="View equipment details" data-bs-toggle="modal" data-bs-target="#equipmentDetailsModal-@(equipment.Id)">
+                                                    <i class="fa fa-eye" aria-hidden="true"></i>
+                                                </button>
+
+                                                @if (User.IsInRole(Roles.Administrator))
+                                                {
+                                                    <button type="button" class="btn btn-primary shadow-none rounded-4" title="Edit equipment" data-bs-toggle="modal" data-bs-target="#editEquipmentModal-@(equipment.Id)">
+                                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger shadow-none rounded-4" title="Delete equipment" onclick="deleteEquipment('@equipment.Id')">
+                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -185,5 +212,6 @@
     <script src="~/js/requests/add-equipment-to-request.js" asp-append-version="true"></script>
     <script src="~/js/requests/remove-equipment-from-request.js" asp-append-version="true"></script>
     <script src="~/js/requests/cancel-request.js" asp-append-version="true"></script>
+    <script src="~/js/clients/update-phone-number.js" asp-append-version="true"></script>
 
 }

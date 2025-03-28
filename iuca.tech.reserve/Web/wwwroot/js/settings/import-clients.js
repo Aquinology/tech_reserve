@@ -4,8 +4,7 @@
 
         const response = await $.ajax({
             url: "/ImportData/ImportClients",
-            type: "POST",
-            cache: false
+            type: "POST"
         });
 
         if (response.isSuccess) {

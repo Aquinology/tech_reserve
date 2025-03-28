@@ -4,8 +4,7 @@
 
         const response = await $.ajax({
             url: "/Users/GenerateClientAccounts",
-            type: "POST",
-            cache: false
+            type: "POST"
         });
 
         if (response.isSuccess) {

@@ -4,11 +4,12 @@ namespace Domain.Enums;
 
 public enum EquipmentStatus
 {
+    [EnumMetadata("secondary")]
     None = 0,
-    [EnumMetadata("text-success")]
+    [EnumMetadata("success")]
     Available,
-    [EnumMetadata("text-warning")]
+    [EnumMetadata("warning")]
     Reserved,
-    [EnumMetadata("text-danger")]
+    [EnumMetadata("danger")]
     Occupied
 }

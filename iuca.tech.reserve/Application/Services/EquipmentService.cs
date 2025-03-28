@@ -34,10 +34,24 @@ public class EquipmentService : IEquipmentService
         {
             var equipments = await _db.Equipments
                 .AsNoTracking()
+                .Include(x => x.EquipmentRequests)
+                .ThenInclude(x => x.Request.Client)
                 .OrderBy(x => x.EquipmentNumber)
                 .ToListAsync();
 
-            return Result<IList<EquipmentDTO>>.Success(_mapper.Map<IList<EquipmentDTO>>(equipments));
+            var mappedEquipments = _mapper.Map<IList<EquipmentDTO>>(equipments);
+
+            mappedEquipments.ToList().ForEach(x =>
+            {
+                var activeRequest = x.EquipmentRequests
+                    .FirstOrDefault(y => y.Request.Status == RequestStatus.Pending || y.Request.Status == RequestStatus.Issued);
+                if (activeRequest != null)
+                {
+                    x.Borrower = activeRequest.Request.Client;
+                }
+            });
+
+            return Result<IList<EquipmentDTO>>.Success(mappedEquipments);
         }
         catch (Exception ex)
         {

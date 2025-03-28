@@ -26,5 +26,7 @@ public class EquipmentDTO
     public EquipmentType Type { get; set; }
     public EquipmentStatus Status { get; set; } = EquipmentStatus.Available;
 
+    public ClientDTO? Borrower {  get; set; }
+
     public IList<EquipmentRequestDTO> EquipmentRequests { get; set; } = new List<EquipmentRequestDTO>();
 }

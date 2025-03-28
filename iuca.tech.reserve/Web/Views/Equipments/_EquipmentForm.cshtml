@@ -19,6 +19,20 @@
             <input type="text" class="form-control shadow-none rounded-4" placeholder="Serial number" asp-for="@Model.SerialNumber">
         </div>
         <div class="form-group my-2">
+            <label for="Type">
+                Type
+            </label>
+            <select class="form-control shadow-none rounded-4" asp-items="@ViewBag.EquipmentTypes" asp-for="@Model.Type">
+            </select>
+        </div>
+        <div class="form-group my-2">
+            <label for="Status">
+                Status
+            </label>
+            <select class="form-control shadow-none rounded-4" asp-items="@ViewBag.EquipmentStatuses" asp-for="@Model.Status">
+            </select>
+        </div>
+        <div class="form-group my-2">
             <label for="Description">
                 Description
             </label>
@@ -29,14 +43,6 @@
                 Image
             </label>
             <input type="file" class="form-control shadow-none rounded-4" accept="image/*" asp-for="@Model.ImageFile">
-        </div>
-        <div class="form-group my-2">
-            <label for="Type">
-                Type
-                <span class="text-danger">*</span>
-            </label>
-            <select class="form-control shadow-none rounded-4" asp-items="@ViewBag.EquipmentTypes" asp-for="@Model.Type">
-            </select>
         </div>
 
     </div>

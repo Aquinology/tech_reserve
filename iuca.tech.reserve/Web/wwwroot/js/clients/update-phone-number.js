@@ -1,14 +1,14 @@
-﻿var createEquipment = async function () {
+﻿var updatePhoneNumber = async function () {
 
-    var formData = new FormData(document.getElementById("equipmentForm"));
+    var formData = new FormData(document.getElementById("phoneNumberForm"));
 
     try {
         const response = await $.ajax({
-            url: "/Equipments/Create",
+            url: "/Clients/UpdatePhoneNumber",
             type: "POST",
             data: formData,
-            contentType: false,
-            processData: false
+            processData: false,
+            contentType: false
         });
 
         if (response.isSuccess) {
@@ -19,6 +19,6 @@
     }
     catch (error) {
         console.log(error);
-        showPopupModal(CONSTS.MODAL_FAIL, 'Error', 'An error occurred while creatting.');
+        showPopupModal(CONSTS.MODAL_FAIL, 'Error', 'An error occurred while updating.');
     }
 }

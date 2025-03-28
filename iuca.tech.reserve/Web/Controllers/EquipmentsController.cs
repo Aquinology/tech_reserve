@@ -37,6 +37,7 @@ public class EquipmentsController : Controller
         var requestResult = await _requestService.GetActualRequest(currentUser.Id);
 
         ViewBag.EquipmentTypes = new SelectList(Enum.GetValues(typeof(EquipmentType)));
+        ViewBag.EquipmentStatuses = new SelectList(Enum.GetValues(typeof(EquipmentStatus)));
 
         return View((equipmentsResult.Data, requestResult.Data));
     }

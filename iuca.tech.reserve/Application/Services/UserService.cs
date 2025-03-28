@@ -8,6 +8,7 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Data;
 
 namespace Application.Services
 {
@@ -155,6 +156,21 @@ namespace Application.Services
                     string.Join(", ", result.Errors.Select(e => e.Description)));
                 return Result.Error("Failed to delete user.");
             }
+        }
+
+        public async Task<Result> UpdateClientPhoneNumber(string userId, string phoneNumber)
+        {
+            var client = await _db.Clients.FindAsync(userId);
+            if (client == null)
+            {
+                return Result.Error("Client not found.");
+            }
+
+            client.PhoneNumber = phoneNumber;
+
+            await _db.SaveChangesAsync();
+
+            return Result.Success("");
         }
 
         public async Task<Result> GenerateClientAccounts()
