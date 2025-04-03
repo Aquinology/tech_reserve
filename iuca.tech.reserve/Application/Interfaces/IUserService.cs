@@ -1,16 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Application.DTOs;
-using Application.DTOs.Common;
+﻿using Application.DTOs.Common;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application.Interfaces;
 
 public interface IUserService
 {
-    Task<Result<IList<ClientDTO>>> GetAllClients();
     Task<Result<IList<(IdentityUser User, IList<string> Roles)>>> GetAllUsersWithRoles();
     Task<Result<IList<IdentityRole>>> GetAllRoles();
-    Task<Result> CreateUser(string email, string role);
+    Task<Result> CreateUser(string email, string role, string firstName = null, string lastName = null);
     Task<Result> DeleteUser(string userId);
-    Task<Result> UpdateClientPhoneNumber(string userId, string phone);
     Task<Result> GenerateClientAccounts();
 }

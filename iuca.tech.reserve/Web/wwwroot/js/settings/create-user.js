@@ -1,6 +1,8 @@
 ﻿var createUser = async function () {
 
     var email = $('#email').val();
+    var firstName = $('#firstName').val();
+    var lastName = $('#lastName').val();
     var role = $('#role').val();
 
     try {
@@ -9,6 +11,8 @@
             type: "POST",
             data: {
                 email: email,
+                firstName: firstName,
+                lastName: lastName,
                 role: role
             }
         });

@@ -34,6 +34,9 @@ public class RequestService : IRequestService
             if (status.HasValue)
             {
                 query = query.Where(x => x.Status == status);
+            } else
+            {
+                query = query.Where(x => x.Status == RequestStatus.Pending || x.Status == RequestStatus.Issued);
             }
 
             var requests = await query

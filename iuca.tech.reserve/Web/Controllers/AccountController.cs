@@ -64,7 +64,10 @@ public class AccountController : Controller
 
         if (user == null)
         {
-            var userResult = await _userService.CreateUser(email, Roles.Client);
+            var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
+            var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname);
+
+            var userResult = await _userService.CreateUser(email, Roles.Client, firstName, lastName);
 
             if (!userResult.IsSuccess)
             {

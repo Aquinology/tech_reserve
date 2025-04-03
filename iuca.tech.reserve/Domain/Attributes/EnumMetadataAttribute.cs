@@ -3,10 +3,12 @@
 [AttributeUsage(AttributeTargets.Field)]
 public class EnumMetadataAttribute : Attribute
 {
-    public string TextColorClass { get; }
+    public string ColorClass { get; }
+    public string IconClass { get; }
 
-    public EnumMetadataAttribute(string textColorClass)
+    public EnumMetadataAttribute(string colorClass = "", string iconClass = "")
     {
-        TextColorClass = textColorClass;
+        ColorClass = colorClass;
+        IconClass = iconClass;
     }
 }

@@ -91,6 +91,20 @@ public class RequestsController : Controller
 
     [Authorize(Roles = Roles.Administrator)]
     [HttpPost]
+    public async Task<IActionResult> CancelApproval(int requestId)
+    {
+        var result = await _requestService.SetRequestStatus(requestId, RequestStatus.Pending);
+
+        if (result.IsSuccess)
+        {
+            result = await _requestService.SetIssuedDate(requestId, DateTime.MinValue);
+        }
+
+        return Json(new { isSuccess = result.IsSuccess, message = result.Message });
+    }
+
+    [Authorize(Roles = Roles.Administrator)]
+    [HttpPost]
     public async Task<IActionResult> ReturnEquipment(int requestId)
     {
         var result = await _requestService.SetRequestStatus(requestId, RequestStatus.Returned);

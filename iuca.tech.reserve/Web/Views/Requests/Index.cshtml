@@ -21,62 +21,152 @@
     </div>
 
     <div class="row pt-2">
-        <div class="col-12">
-
-            @if (Model != null && Model.Any())
+        @if (Model != null && Model.Any())
+        {
+            foreach (var request in Model)
             {
-                foreach (var request in Model)
-                {
-                    <div class="card my-3">
-                        <div class="card-header">
-                            <h5 class="card-title mb-1">
-                                <i class="fa fa-circle text-@request.Status.GetTextColorClass()"></i>
-                                @Enum.GetName(request.Status)
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-6 col-12">
-                                    <span>@request.Client.FullName</span>
-                                    <span>@request.Client.PhoneNumber</span>
-                                    <br />
-                                    @if (request.IssuedDate != DateTime.MinValue)
-                                    {
-                                        <span>@request.IssuedDate.ToLocalTime()</span>
-                                    }
-                                    <br />
-                                    @if (request.ReturnedDate != DateTime.MinValue)
-                                    {
-                                        <span>@request.ReturnedDate.ToLocalTime()</span>
-                                    }
+                <div class="col-6">
+
+                    <div class="card my-3 rounded-4 overflow-hidden">
+                        <div class="card-header bg-white">
+                            <div class="row justify-content-between">
+                                <div class="col-auto">
+                                    <h5 class="p-1 m-0">
+                                        <i class="fa fa-circle text-@request.Status.GetColorClass()"></i>
+                                        @Enum.GetName(request.Status)
+                                    </h5>
                                 </div>
-                                <div class="col-lg-6 col-12 mt-3">
-                                    @if (request.RequestEquipments != null && request.RequestEquipments.Any())
+                                <div class="col-auto p-1">
+                                    @if (request.Status == RequestStatus.Pending && request.ReservedDate != DateTime.MinValue)
                                     {
-                                        foreach (var equipmentRequest in request.RequestEquipments)
+                                        var timeLeft = request.ReservedDate.AddMinutes(5) - DateTime.UtcNow;
+                                        if (timeLeft > TimeSpan.Zero)
                                         {
-                                            <span>@equipmentRequest.Equipment.Type.ToString() @equipmentRequest.Equipment.EquipmentNumber</span>
-                                            <br />
+                                            <span>Left: </span>
+                                            <span id="timer" data-time="@timeLeft.TotalSeconds">@timeLeft.Minutes min. @timeLeft.Seconds sec.</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Time is up.</span>
                                         }
                                     }
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer">
-                            @if (request.Status == RequestStatus.Pending)
-                            {
-                                <a href="#" class="card-link" onclick="rejectRequest('@request.Id')">Reject</a>
-                                <a href="#" class="card-link" onclick="approveRequest('@request.Id')">Approve</a>
-                            }
-                            else if (request.Status == RequestStatus.Issued)
-                            {
-                                <a href="#" class="card-link" onclick="returnRequest('@request.Id')">Return</a>
-                            }
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-6 col-12 mb-2">
+
+                                    <div class="row">
+                                        <div class="col-12 my-1">
+                                            <div class="row">
+                                                <div class="col-4 text-muted text-nowrap">
+                                                    Name:
+                                                </div>
+                                                <div class="col-8">
+                                                    @request.Client!.FullName
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 my-1">
+                                            <div class="row">
+                                                <div class="col-4 text-muted text-nowrap">
+                                                    Email:
+                                                </div>
+                                                <div class="col-8">
+                                                    @request.Client!.Email
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 my-1">
+                                            <div class="row">
+                                                <div class="col-4 text-muted text-nowrap">
+                                                    Phone:
+                                                </div>
+                                                <div class="col-8">
+                                                    @if (string.IsNullOrEmpty(request.Client.PhoneNumber))
+                                                    {
+                                                        <span class="text-danger">None</span>
+                                                    } else
+                                                    {
+                                                        <span>@request.Client!.PhoneNumber</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if (request.IssuedDate != DateTime.MinValue)
+                                        {
+                                            <div class="col-12 my-1">
+                                                <div class="row">
+                                                    <div class="col-4 text-muted text-nowrap">
+                                                        Issued:
+                                                    </div>
+                                                    <div class="col-8">
+                                                        @request.IssuedDate.ToLocalTime().ToString("dd MMMM HH:mm")
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        @if (request.ReturnedDate != DateTime.MinValue)
+                                        {
+                                            <div class="col-12 my-1">
+                                                <div class="row">
+                                                    <div class="col-4 text-muted text-nowrap">
+                                                        Returned:
+                                                    </div>
+                                                    <div class="col-8">
+                                                        @request.ReturnedDate.ToLocalTime().ToString("dd MMMM HH:mm")
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-12">
+                                    @if (request.RequestEquipments != null && request.RequestEquipments.Any())
+                                    {
+                                        foreach (var equipmentRequest in request.RequestEquipments)
+                                        {
+                                            <div class="row my-1">
+                                                <div class="col-12">
+                                                    <h6>
+                                                        <i class="fa @equipmentRequest.Equipment!.Type.GetIconClass() aria-hidden="true"></i>
+                                                        @equipmentRequest.Equipment!.Type.ToString()
+                                                        <strong class="text-primary">#@equipmentRequest.Equipment!.EquipmentNumber</strong>
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
                         </div>
+                        @if (request.Status == RequestStatus.Pending)
+                        {
+                            <div class="card-footer bg-white text-end">
+                                <button type="button" class="btn btn-success shadow-none rounded-4" title="Approve request" onclick="approveRequest('@request.Id')">
+                                    <i class="fa fa-check" aria-hidden="true"></i> Approve
+                                </button>
+                                <button type="button" class="btn btn-danger shadow-none rounded-4" title="Reject request" onclick="rejectRequest('@request.Id')">
+                                    <i class="fa fa-times" aria-hidden="true"></i> Reject
+                                </button>
+                            </div>
+                        }
+                        else if (request.Status == RequestStatus.Issued)
+                        {
+                            <div class="card-footer bg-white text-end">
+                                <button type="button" class="btn btn-success shadow-none rounded-4" title="Return request" onclick="returnRequest('@request.Id')">
+                                    <i class="fa fa-handshake-o" aria-hidden="true"></i> Return
+                                </button>
+                                <button type="button" class="btn btn-danger shadow-none rounded-4" title="Cancel approval" onclick="cancelApproval('@request.Id')">
+                                    Cancel
+                                </button>
+                            </div>
+                        }
                     </div>
-                }
+                </div>
             }
-        </div>
+        }
     </div>
 
 </div>
@@ -86,5 +176,7 @@
     <script src="~/js/requests/reject-request.js" asp-append-version="true"></script>
     <script src="~/js/requests/approve-request.js" asp-append-version="true"></script>
     <script src="~/js/requests/return-request.js" asp-append-version="true"></script>
+    <script src="~/js/requests/cancel-approval.js" asp-append-version="true"></script>
+    <script src="~/js/timer.js" asp-append-version="true"></script>
 
 }

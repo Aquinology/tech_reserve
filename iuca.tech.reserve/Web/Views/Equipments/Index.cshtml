@@ -30,31 +30,25 @@
                 </div>
 
                 <div class="row pt-2">
-                    <div class="col-12">
+                    <div class="col-lg-6 col-12">
 
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-1">
-                                    <i class="fa fa-circle text-@Model.Request.Status.GetTextColorClass()"></i>
-                                    @Enum.GetName(Model.Request.Status)
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-lg-6 col-12">
-                                        <span>@Model.Request.Client.FullName</span>
-                                        <span>@Model.Request.Client.PhoneNumber</span>
-                                        <a href="#" class="card-link" data-bs-toggle="modal" data-bs-target="#updatePhoneNumberModal">
-                                            <i class="fa fa-pencil-square-o"></i>
-                                        </a>
-                                        @(await Html.PartialAsync("~/Views/Clients/_UpdateNumberPhoneModal.cshtml", Model.Request.Client))
-                                        <br />
+                        <div class="card rounded-4 overflow-hidden">
+                            <div class="card-header bg-white">
+                                <div class="row justify-content-between">
+                                    <div class="col-auto">
+                                        <h5 class="p-1 m-0">
+                                            <i class="fa fa-circle text-@Model.Request.Status.GetColorClass()"></i>
+                                            @Enum.GetName(Model.Request.Status)
+                                        </h5>
+                                    </div>
+                                    <div class="col-auto p-1">
                                         @if (Model.Request.Status == RequestStatus.Pending && Model.Request.ReservedDate != DateTime.MinValue)
                                         {
                                             var timeLeft = Model.Request.ReservedDate.AddMinutes(5) - DateTime.UtcNow;
                                             if (timeLeft > TimeSpan.Zero)
                                             {
-                                                <span>Left: @timeLeft.Minutes min. @timeLeft.Seconds sec.</span>
+                                                <span>Left: </span>
+                                                <span id="timer" data-time="@timeLeft.TotalSeconds">@timeLeft.Minutes min. @timeLeft.Seconds sec.</span>
                                             }
                                             else
                                             {
@@ -62,30 +56,83 @@
                                             }
                                         }
                                     </div>
-                                    <div class="col-lg-6 col-12">
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-6 col-12 mb-2">
+
+                                        <div class="row">
+                                            <div class="col-12 my-1">
+                                                <div class="row">
+                                                    <div class="col-3 text-muted text-nowrap">
+                                                        Client:
+                                                    </div>
+                                                    <div class="col-9">
+                                                        @Model.Request.Client!.FullName
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 my-1">
+                                                <div class="row">
+                                                    <div class="col-3 text-muted text-nowrap">
+                                                        Phone:
+                                                    </div>
+                                                    <div class="col-9">
+                                                        @if (string.IsNullOrEmpty(Model.Request.Client!.PhoneNumber))
+                                                        {
+                                                            <span class="text-danger">Please provide a phone number</span>
+                                                        } else
+                                                        {
+                                                            <span>@Model.Request.Client!.PhoneNumber</span>
+                                                        }
+                                                        <a href="#" class="card-link p-1" title="Edit number phone" data-bs-toggle="modal" data-bs-target="#updatePhoneNumberModal">
+                                                            <i class="fa fa-pencil-square-o"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                @(await Html.PartialAsync("~/Views/Clients/_UpdateNumberPhoneModal.cshtml", Model.Request.Client))
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-6 col-12 my-lg-0 my-2">
                                         @if (Model.Request.RequestEquipments != null && Model.Request.RequestEquipments.Any())
                                         {
                                             foreach (var equipmentRequest in Model.Request.RequestEquipments)
                                             {
-                                                <span>@equipmentRequest.Equipment.Type.ToString() @equipmentRequest.Equipment.EquipmentNumber</span>
-                                                @if (equipmentRequest.Request.Status == RequestStatus.Pending)
-                                                {
-                                                    <button type="button" class="btn btn-danger shadow-none rounded-4" onclick="removeEquipmentFromRequest('@equipmentRequest.Equipment.Id')">
-                                                        <i class="fa fa-times" aria-hidden="true"></i>
-                                                    </button>
-                                                }
-                                                <br />
+                                                <div class="row justify-content-between my-1">
+                                                    <div class="col-auto">
+                                                        <h6>
+                                                            <i class="fa @equipmentRequest.Equipment!.Type.GetIconClass() aria-hidden="true"></i>
+                                                            @equipmentRequest.Equipment!.Type.ToString()
+                                                            <strong class="text-primary">#@equipmentRequest.Equipment!.EquipmentNumber</strong>
+                                                        </h6>
+                                                    </div>
+                                                    <div class="col-auto text-end">
+                                                        @if (equipmentRequest.Request!.Status == RequestStatus.Pending)
+                                                        {
+                                                            <h6>
+                                                                <a href="#" class="text-danger" title="Remove equipment from request" onclick="removeEquipmentFromRequest('@equipmentRequest.Equipment.Id')">
+                                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                </a>
+                                                            </h6>
+                                                        }
+                                                    </div>
+                                                </div>
                                             }
                                         }
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-footer">
-                                @if (Model.Request.Status == RequestStatus.Pending)
-                                {
-                                    <a href="#" class="card-link" onclick="cancelRequest('@Model.Request.Id')">Cancel</a>
-                                }
-                            </div>
+                            @if (Model.Request.Status == RequestStatus.Pending)
+                            {
+                                <div class="card-footer bg-white text-end">
+                                    <button type="button" class="btn btn-danger shadow-none rounded-4" title="Cancel request" onclick="cancelRequest('@Model.Request.Id')">
+                                        Cancel
+                                    </button>
+                                </div>
+                            }
                         </div>
 
                     </div>
@@ -115,16 +162,19 @@
                             }
 
                             <div class="col-lg-3 col-md-4 col-12 p-2">
+
                                 <div class="card rounded-4 overflow-hidden">
                                     <div class="card-body">
                                         <div class="row justify-content-between">
                                             <div class="col-auto">
-                                                <h5>
-                                                    @equipment.Type.ToString() <strong class="text-primary"><small>#@equipment.EquipmentNumber</small></strong>
-                                                </h5>
+                                                <h6>
+                                                    <i class="fa @equipment.Type.GetIconClass() aria-hidden="true"></i>
+                                                    @equipment.Type.ToString()
+                                                    <strong class="text-primary">#@equipment.EquipmentNumber</strong>
+                                                </h6>
                                             </div>
                                             <div class="col-auto text-end">
-                                                <div class="badge badge-@equipment.Status.GetTextColorClass()">
+                                                <div class="badge badge-@equipment.Status.GetColorClass()">
                                                     @equipment.Status
                                                 </div>
                                             </div>
@@ -173,6 +223,7 @@
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                         }
                     }
@@ -213,5 +264,6 @@
     <script src="~/js/requests/remove-equipment-from-request.js" asp-append-version="true"></script>
     <script src="~/js/requests/cancel-request.js" asp-append-version="true"></script>
     <script src="~/js/clients/update-phone-number.js" asp-append-version="true"></script>
+    <script src="~/js/timer.js" asp-append-version="true"></script>
 
 }

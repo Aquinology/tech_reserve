@@ -9,7 +9,7 @@
             </div>
             <div class="modal-body">
                 <div class="row my-3">
-                    <div class="col-3 text-muted">
+                    <div class="col-3 text-muted text-nowrap">
                         Number:
                     </div>
                     <div class="col-9">
@@ -17,7 +17,7 @@
                     </div>
                 </div>
                 <div class="row my-3">
-                    <div class="col-3 text-muted">
+                    <div class="col-3 text-muted text-nowrap">
                         SN:
                     </div>
                     <div class="col-9">
@@ -33,7 +33,7 @@
                 </div>
 
                 <div class="row my-3">
-                    <div class="col-3 text-muted">
+                    <div class="col-3 text-muted text-nowrap">
                         Type:
                     </div>
                     <div class="col-9">
@@ -42,11 +42,11 @@
                 </div>
 
                 <div class="row my-3">
-                    <div class="col-3 text-muted">
+                    <div class="col-3 text-muted text-nowrap">
                         Status:
                     </div>
                     <div class="col-9">
-                        <div class="badge badge-@Model.Status.GetTextColorClass()">
+                        <div class="badge badge-@Model.Status.GetColorClass()">
                             @Model.Status.ToString()
                         </div>
                     </div>
@@ -56,7 +56,7 @@
                     @if (User.IsInRole(Roles.Administrator))
                     {
                         <div class="row my-3">
-                            <div class="col-3 text-muted">
+                            <div class="col-3 text-muted text-nowrap">
                                 Borrower:
                             </div>
                             <div class="col-9">
@@ -74,7 +74,7 @@
                 }
                 
                 <div class="row my-3">
-                    <div class="col-3 text-muted">
+                    <div class="col-3 text-muted text-nowrap">
                         Description:
                     </div>
                     <div class="col-9">
@@ -92,11 +92,18 @@
                 </div>
 
                 <div class="row my-3">
-                    <div class="col-3 text-muted">
+                    <div class="col-3 text-muted text-nowrap">
                         Image:
                     </div>
                     <div class="col-9">
-                        <img src="@(string.IsNullOrEmpty(Model.ImagePath) ? "uploads\\no-photo.jpg" : Model.ImagePath)" class="card-img-top" style="height: 160px; object-fit:cover;">
+                        @if (string.IsNullOrEmpty(Model.ImagePath))
+                        {
+                            <text>-</text>
+                        }
+                        else
+                        {
+                            <img src="@Model.ImagePath" class="card-img-top" style="height: 160px; object-fit:cover;">
+                        }
                     </div>
                 </div>
                 

@@ -7,11 +7,11 @@ namespace Web.Controllers;
 
 public class ClientsController : Controller
 {
-    private readonly IUserService _userService;
+    private readonly IClientService _clientService;
 
-    public ClientsController(IUserService userService)
+    public ClientsController(IClientService clientService)
     {
-        _userService = userService;
+        _clientService = clientService;
     }
 
     [Authorize(Roles = Roles.Client)]
@@ -28,7 +28,7 @@ public class ClientsController : Controller
             return Json(new { isSuccess = false, message = errorMessage });
         }
 
-        var result = await _userService.UpdateClientPhoneNumber(applicationUserId, phoneNumber);
+        var result = await _clientService.UpdateClientPhoneNumber(applicationUserId, phoneNumber);
         return Json(new { isSuccess = result.IsSuccess, message = result.Message });
     }
 }

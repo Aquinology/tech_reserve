@@ -36,7 +36,8 @@ public class EquipmentService : IEquipmentService
                 .AsNoTracking()
                 .Include(x => x.EquipmentRequests)
                 .ThenInclude(x => x.Request.Client)
-                .OrderBy(x => x.EquipmentNumber)
+                .OrderByDescending(x => x.Status == EquipmentStatus.Available)
+                .ThenBy(x => x.EquipmentNumber)
                 .ToListAsync();
 
             var mappedEquipments = _mapper.Map<IList<EquipmentDTO>>(equipments);
@@ -44,10 +45,10 @@ public class EquipmentService : IEquipmentService
             mappedEquipments.ToList().ForEach(x =>
             {
                 var activeRequest = x.EquipmentRequests
-                    .FirstOrDefault(y => y.Request.Status == RequestStatus.Pending || y.Request.Status == RequestStatus.Issued);
+                    .FirstOrDefault(y => y.Request!.Status == RequestStatus.Pending || y.Request.Status == RequestStatus.Issued);
                 if (activeRequest != null)
                 {
-                    x.Borrower = activeRequest.Request.Client;
+                    x.Borrower = activeRequest.Request!.Client;
                 }
             });
 

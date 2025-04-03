@@ -13,14 +13,17 @@ public class UsersController : Controller
     private readonly ILogger<UsersController> _logger;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IUserService _userService;
+    private readonly IClientService _clientService;
 
     public UsersController(ILogger<UsersController> logger,
         UserManager<IdentityUser> userManager,
-        IUserService userService)
+        IUserService userService,
+        IClientService clientService)
     {
         _logger = logger;
         _userManager = userManager;
         _userService = userService;
+        _clientService = clientService; 
     }
 
     public async Task<IActionResult> Index()
@@ -37,9 +40,9 @@ public class UsersController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(string email, string role)
+    public async Task<IActionResult> Create(string email, string firstName, string lastName,  string role)
     {
-        var result = await _userService.CreateUser(email, role);
+        var result = await _userService.CreateUser(email, role, firstName, lastName);
         return Json(new { isSuccess = result.IsSuccess, message = result.Message });
     }
 

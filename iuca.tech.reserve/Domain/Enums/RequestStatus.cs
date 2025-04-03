@@ -4,16 +4,15 @@ namespace Domain.Enums;
 
 public enum RequestStatus
 {
-    [EnumMetadata("secondary")]
     None = 0,
-    [EnumMetadata("secondary")]
+    [EnumMetadata(colorClass: "secondary")]
     Canceled,
-    [EnumMetadata("warning")]
+    [EnumMetadata(colorClass: "warning")]
     Pending,
-    [EnumMetadata("danger")]
+    [EnumMetadata(colorClass: "danger")]
     Rejected,
-    [EnumMetadata("primary")]
+    [EnumMetadata(colorClass: "primary")]
     Issued,
-    [EnumMetadata("success")]
+    [EnumMetadata(colorClass: "success")]
     Returned
 }
